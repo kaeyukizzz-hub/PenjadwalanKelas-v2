@@ -3,31 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM | Class Manager</title>
-    <!-- Memuat font Orbitron (futuristik) dan Poppins (mudah dibaca) -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>System - Penjadwalan Kelas</title>
     
-    <!-- Memuat library SheetJS untuk membaca file Excel -->
+    <!-- Impor Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Impor SheetJS (XLSX) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        /* --- Konfigurasi Tema Utama (Solo Leveling) --- */
+        /* --- Variabel CSS --- */
         :root {
-            --color-bg: #0A0C1A; /* Hitam kebiruan gelap */
-            --color-bg-panel: rgba(10, 25, 47, 0.75); /* Latar belakang panel semi-transparan */
-            --color-primary: #00FFFF; /* Biru Neon (Cyan) */
-            --color-secondary: #9A00FF; /* Ungu Neon (Aksen) */
-            --color-text: #E0E0E0; /* Teks putih pudar */
-            --color-text-dark: #B0B0B0; /* Teks lebih gelap/placeholder */
-            --color-success: #00FF7F; /* Hijau Neon */
-            --color-danger: #FF004D; /* Merah Neon */
-            --color-glow: rgba(0, 255, 255, 0.5); /* Efek glow utama */
-            --color-glow-danger: rgba(255, 0, 77, 0.5);
-            --font-primary: 'Orbitron', sans-serif; /* Font untuk judul */
-            --font-secondary: 'Poppins', sans-serif; /* Font untuk isi */
+            --color-bg: #0a0a1a; /* Latar belakang biru kehitaman */
+            --color-bg-darker: #05050e;
+            --color-primary: #00ffff; /* Biru neon (Cyan) */
+            --color-secondary: #00aaff;
+            --color-accent: #ff00ff; /* Magenta (opsional) */
+            --color-danger: #ff4d4d;
+            --color-success: #4dff4d;
+            --color-text: #e0e0e0;
+            --color-text-dark: #8899aa;
+            --color-glow: rgba(0, 255, 255, 0.3);
+            --color-glow-danger: rgba(255, 77, 77, 0.5);
+
+            --font-primary: 'Orbitron', sans-serif; /* Untuk Judul */
+            --font-secondary: 'Poppins', 'Rajdhani', sans-serif; /* Untuk Teks */
         }
 
-        /* --- Reset dan Pengaturan Dasar --- */
+        /* --- Reset & Global --- */
         * {
             margin: 0;
             padding: 0;
@@ -35,123 +40,120 @@
         }
 
         html, body {
-            width: 100%;
             height: 100%;
-            overflow: hidden; /* Mencegah scroll di body utama */
+            width: 100%;
+        }
+
+        body {
+            font-family: var(--font-secondary);
             background-color: var(--color-bg);
             color: var(--color-text);
-            font-family: var(--font-secondary);
-            font-size: 16px;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        /* Efek latar belakang statis/noise untuk nuansa sistem */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' opacity='0.05'%3E%3Crect width='100' height='100' fill='%2300FFFF'/%3E%3Cpath d='M0 0 L50 50 L0 100 Z' fill='%230A0C1A'/%3E%3Cpath d='M100 0 L50 50 L100 100 Z' fill='%230A0C1A'/%3E%3C/svg%3E");
-            z-index: -1;
-            animation: staticNoise 10s steps(10) infinite;
-        }
-
-        @keyframes staticNoise {
-            0%, 100% { background-position: 0 0; }
-            10% { background-position: -5% -5%; }
-            20% { background-position: -10% 5%; }
-            30% { background-position: 5% -10%; }
-            40% { background-position: -5% 15%; }
-            50% { background-position: -10% -5%; }
-            60% { background-position: 15% 0; }
-            70% { background-position: 0 10%; }
-            80% { background-position: -15% 0; }
-            90% { background-position: 10% 5%; }
-        }
-
-        h1, h2, h3, h4, h5 {
+        h1, h2, h3, h4 {
             font-family: var(--font-primary);
             color: var(--color-primary);
-            text-shadow: 0 0 5px var(--color-glow), 0 0 10px var(--color-glow);
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-        }
-
-        p {
-            line-height: 1.6;
-            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--color-glow);
         }
 
         a {
-            color: var(--color-primary);
+            color: var(--color-secondary);
             text-decoration: none;
         }
 
-        /* --- Kontainer Halaman dan Transisi --- */
+        input, select, textarea, button {
+            font-family: var(--font-secondary);
+            color: var(--color-text);
+        }
+
+        /* --- Kontainer Utama --- */
+        .app-container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- Halaman (Layar) --- */
         .page {
             width: 100%;
             height: 100%;
             position: absolute;
             top: 0;
             left: 0;
-            display: none; /* Disembunyikan secara default */
-            opacity: 0;
-            transform: translateX(20px);
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-        }
-
-        .page.active {
-            display: flex; /* Menggunakan flex untuk layout */
-            opacity: 1;
-            transform: translateX(0);
-            z-index: 10;
-        }
-
-        /* Transisi Keluar (Logout) */
-        .page.exiting {
-            opacity: 0;
-            transform: scale(0.95);
-            transition: opacity 0.5s ease-in, transform 0.5s ease-in;
-        }
-
-        /* --- Halaman Autentikasi (Login & Registrasi) --- */
-        #auth-container, #login-page, #register-user-page, #register-admin-page {
+            overflow-y: auto;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s;
+            display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
 
+        /* Animasi Transisi Halaman */
+        .page.hidden {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .page.slide-out-left {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        .page.slide-in-right {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        .page.slide-in-from-right {
+            transform: translateX(100%);
+            animation: slideInFromRight 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        .page.slide-out-to-left {
+            animation: slideOutToLeft 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0%); opacity: 1; }
+        }
+        @keyframes slideOutToLeft {
+            0% { transform: translateX(0%); opacity: 1; }
+            100% { transform: translateX(-100%); opacity: 0; }
+        }
+
+        /* --- Halaman Login & Registrasi --- */
+        #auth-page {
+            justify-content: center;
+        }
         .auth-box {
-            background: var(--color-bg-panel);
-            backdrop-filter: blur(5px);
+            background: rgba(10, 10, 30, 0.7);
             border: 1px solid var(--color-primary);
             border-radius: 10px;
-            padding: 2rem; /* Diubah dari 2.5rem */
+            padding: 2.5rem; /* Diubah dari 3rem */
             width: 90%;
-            max-width: 420px; /* Diubah dari 450px */
-            box-shadow: 0 0 15px var(--color-glow), 0 0 20px var(--color-glow) inset;
-            animation: pulseGlow 5s infinite alternate;
-        }
-
-        .auth-box h1 {
+            max-width: 400px; /* Diubah dari 450px */
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 25px var(--color-glow);
             text-align: center;
-            font-size: 2.5rem;
         }
-
-        .form-group {
+        .auth-box h1 {
+            font-size: 2rem;
             margin-bottom: 1.5rem;
         }
 
+        /* --- Form --- */
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-family: var(--font-primary);
-            font-size: 0.9rem;
-            color: var(--color-primary);
-            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--color-text-dark);
         }
-
         .form-control {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -186,345 +188,421 @@
 
         .form-control:focus {
             outline: none;
-            background: rgba(0, 0, 0, 0.1);
-            box-shadow: 0 0 10px var(--color-glow);
-            border-color: var(--color-success);
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 15px var(--color-glow);
         }
-
-        /* PERBAIKAN: Membuat teks opsi dropdown terlihat */
+        /* [FIX] Membuat teks <option> terlihat di dropdown */
         .form-control option {
-            color: #0A0C1A; /* Teks warna gelap (dari var --color-bg) */
-            background-color: #FFFFFF; /* Latar belakang putih standar */
+            color: #000000; /* Teks hitam agar terlihat di bg putih */
+            background: #ffffff;
         }
 
-        .auth-options {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .auth-links {
             margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .auth-links a {
+            margin: 0 0.5rem;
         }
 
+        /* --- Tombol --- */
         .btn {
+            display: inline-block;
+            width: 100%;
             padding: 0.75rem 1.5rem;
             font-family: var(--font-primary);
             font-size: 1rem;
-            text-transform: uppercase;
+            font-weight: 700;
+            border: 2px solid var(--color-primary);
             border-radius: 5px;
-            cursor: pointer;
-            border: 1px solid var(--color-primary);
             background: transparent;
             color: var(--color-primary);
+            cursor: pointer;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
         }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--color-primary);
-            transition: all 0.4s;
-            z-index: -1;
-        }
-
         .btn:hover {
+            background: var(--color-primary);
             color: var(--color-bg);
-            box-shadow: 0 0 15px var(--color-glow);
+            box-shadow: 0 0 20px var(--color-glow);
         }
-
-        .btn:hover::before {
-            left: 0;
-        }
-
-        .btn-full {
-            width: 100%;
-        }
-
         .btn-secondary {
-            border-color: var(--color-secondary);
-            color: var(--color-secondary);
+            border-color: var(--color-text-dark);
+            color: var(--color-text-dark);
         }
-        .btn-secondary::before { background: var(--color-secondary); }
-        .btn-secondary:hover { color: var(--color-bg); box-shadow: 0 0 15px var(--color-secondary); }
-        
+        .btn-secondary:hover {
+            background: var(--color-text-dark);
+            color: var(--color-bg);
+            box-shadow: none;
+        }
         .btn-danger {
             border-color: var(--color-danger);
             color: var(--color-danger);
         }
-        .btn-danger::before { background: var(--color-danger); }
-        .btn-danger:hover { color: var(--color-bg); box-shadow: 0 0 15px var(--color-glow-danger); }
-
-        .auth-switch {
-            text-align: center;
-            margin-top: 1.5rem;
+        .btn-danger:hover {
+            background: var(--color-danger);
+            color: var(--color-text);
+            box-shadow: 0 0 20px var(--color-glow-danger);
         }
-        .auth-switch a {
+        .btn-success {
+            border-color: var(--color-success);
+            color: var(--color-success);
+        }
+        .btn-success:hover {
+            background: var(--color-success);
+            color: var(--color-bg);
+            box-shadow: 0 0 20px rgba(77, 255, 77, 0.5);
+        }
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--color-primary);
+            font-size: 1.5rem;
             cursor: pointer;
-            font-weight: 600;
+            transition: color 0.3s;
         }
-        .auth-switch a:hover {
-            text-decoration: underline;
+        .btn-icon:hover {
+            color: var(--color-secondary);
         }
 
-        /* --- Layout Dashboard --- */
-        #dashboard-container {
+        /* --- Halaman Dashboard --- */
+        /* [PERBAIKAN] Menggunakan display:flex untuk layout dashboard */
+        #dashboard-page {
             display: flex;
-            width: 100%;
-            height: 100%;
-            opacity: 0; /* Diatur oleh JS */
+            flex-direction: row;
+            padding: 0;
+            justify-content: flex-start;
+            align-items: flex-start;
         }
 
+        /* Navigasi Samping */
         #dashboard-nav {
-            width: 260px;
-            height: 100%;
-            background: var(--color-bg-panel);
-            border-right: 1px solid var(--color-primary);
-            padding: 2rem 1rem;
+            width: 250px;
+            height: 100vh;
+            background: var(--color-bg-darker);
+            border-right: 2px solid var(--color-primary);
             display: flex;
             flex-direction: column;
-            box-shadow: 5px 0 15px var(--color-glow);
-            z-index: 100;
+            padding: 1.5rem;
             overflow-y: auto;
+            flex-shrink: 0; /* Mencegah nav menyusut */
+            transition: transform 0.3s ease;
         }
-
-        .nav-header {
+        #dashboard-nav h2 {
+            font-size: 1.8rem;
             text-align: center;
             margin-bottom: 2rem;
         }
-        .nav-header h2 {
-            font-size: 1.8rem;
+        #dashboard-nav .nav-group {
+            margin-bottom: 1.5rem;
         }
-        .nav-header p {
+        #dashboard-nav .nav-group h4 {
+            font-family: var(--font-secondary);
             font-size: 0.9rem;
+            font-weight: 600;
             color: var(--color-text-dark);
-            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--color-text-dark);
         }
-
-        .nav-menu {
-            list-style: none;
-            flex-grow: 1;
-        }
-
-        .nav-menu li {
-            margin-bottom: 0.5rem;
-        }
-
-        .nav-menu a {
+        #dashboard-nav .nav-item {
             display: block;
             padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
             border-radius: 5px;
             color: var(--color-text);
             font-weight: 600;
-            transition: all 0.3s;
             cursor: pointer;
-            border: 1px solid transparent;
+            transition: all 0.3s;
+            position: relative;
         }
-
-        .nav-menu a:hover {
-            background: var(--color-primary);
-            color: var(--color-bg);
-            text-shadow: none;
+        #dashboard-nav .nav-item:hover {
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--color-primary);
             transform: translateX(5px);
         }
-
-        .nav-menu a.active {
+        #dashboard-nav .nav-item.active {
             background: var(--color-primary);
             color: var(--color-bg);
-            text-shadow: none;
-            box-shadow: 0 0 10px var(--color-glow);
+            box-shadow: 0 0 15px var(--color-glow);
+        }
+        #dashboard-nav .nav-item .notif-badge {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--color-danger);
+            color: var(--color-text);
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px var(--color-glow-danger);
         }
 
-        /* Kelompok menu admin/superadmin */
-        .nav-group {
-            margin-top: 1.5rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--color-primary);
-        }
-        .nav-group-title {
-            font-family: var(--font-primary);
-            color: var(--color-secondary);
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            margin-bottom: 0.5rem;
-            padding-left: 1rem;
+        #dashboard-nav .logout-btn-container {
+            margin-top: auto; /* Mendorong tombol logout ke bawah */
         }
 
+        /* Konten Utama Dashboard */
         #dashboard-main {
-            flex: 1;
-            height: 100%;
+            flex-grow: 1; /* Mengisi sisa ruang */
+            height: 100vh;
             overflow-y: auto;
-            padding: 2rem 2rem 4rem; /* Menambah padding bawah agar tidak terpotong */
+            padding: 2rem 2rem 4rem; /* Menambah padding bawah */
         }
-
-        /* --- Konten Dashboard (Sub-halaman) --- */
-        .dashboard-page {
-            display: none; /* Dikelola oleh JS */
-            animation: slideIn 0.5s ease-out forwards;
-        }
-
-        .dashboard-page.active {
-            display: block;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .header-bar {
+        #dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            border-bottom: 1px solid var(--color-primary);
-            padding-bottom: 1rem;
+        }
+        #dashboard-header h1 {
+            font-size: 2.5rem;
+        }
+        #mobile-menu-toggle {
+            display: none; /* Sembunyikan di desktop */
+            background: none;
+            border: none;
+            color: var(--color-primary);
+            font-size: 2rem;
+            cursor: pointer;
         }
 
-        .header-bar h1 {
-            margin-bottom: 0;
-        }
-
-        /* --- Kartu Sistem (Panel) --- */
-        .system-card {
-            background: var(--color-bg-panel);
-            backdrop-filter: blur(5px);
+        /* --- UI Card (Jadwal, Tugas, Catatan) --- */
+        .card {
+            background: rgba(10, 10, 30, 0.7);
             border: 1px solid var(--color-primary);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 0 10px var(--color-glow);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
             transition: all 0.3s;
         }
-
-        .system-card:hover {
-            box-shadow: 0 0 20px var(--color-primary);
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px var(--color-glow);
         }
-
-        .system-card h3 {
-            border-bottom: 1px solid var(--color-secondary);
-            padding-bottom: 0.5rem;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 1rem;
-        }
-
-        /* Grid untuk dashboard */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        /* --- Tabel Data --- */
-        .system-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-
-        .system-table th, .system-table td {
-            padding: 0.75rem 1rem;
-            text-align: left;
             border-bottom: 1px solid var(--color-primary);
+            padding-bottom: 1rem;
         }
-
-        .system-table th {
-            font-family: var(--font-primary);
-            color: var(--color-primary);
+        .card-header h3 {
+            font-size: 1.4rem;
+            color: var(--color-secondary);
+        }
+        .card-header small, .card-header .text-muted {
             font-size: 0.9rem;
-            text-transform: uppercase;
+            color: var(--color-text-dark);
+            font-weight: 600;
         }
-
-        .system-table td {
-            font-size: 0.95rem;
-        }
-
-        .system-table tr:hover {
-            background-color: rgba(0, 255, 255, 0.05);
-        }
-        
-        .action-buttons {
+        .card-actions {
             display: flex;
             gap: 0.5rem;
         }
-        
-        .action-buttons .btn {
-            padding: 0.25rem 0.5rem;
+        .card-actions .btn-icon {
+            font-size: 1.2rem;
+            padding: 0.3rem;
+        }
+        .card-actions .btn-icon:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        /* Grid untuk Jadwal & Tugas */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Halaman Welcome */
+        #welcome-message {
+            text-align: center;
+        }
+        #welcome-message h1 {
+            font-size: 3rem;
+        }
+        #welcome-message p {
+            font-size: 1.2rem;
+            color: var(--color-text-dark);
+            max-width: 600px;
+            margin: 1rem auto 0;
+        }
+
+        /* Tabel (Manajemen User, dll) */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: rgba(10, 10, 30, 0.7);
+            border: 1px solid var(--color-primary);
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-primary);
+        }
+        table th {
+            font-family: var(--font-primary);
+            color: var(--color-primary);
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        table tr {
+            transition: background-color 0.3s;
+        }
+        table tr:last-child td {
+            border-bottom: none;
+        }
+        table tr:hover {
+            background: rgba(0, 255, 255, 0.05);
+        }
+        table td .btn {
+            width: auto;
+            padding: 0.3rem 0.7rem;
             font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+        .status-pending {
+            color: #ffc107; /* Kuning */
+            font-weight: 600;
+        }
+        .status-approved {
+            color: var(--color-success);
+            font-weight: 600;
+        }
+        .status-rejected {
+            color: var(--color-danger);
+            font-weight: 600;
+        }
+
+        /* Header Tombol (Tambah Jadwal, dll) */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .page-header h1 {
+            font-size: 2.5rem;
+        }
+        .page-header .btn {
+            width: auto;
+        }
+        .header-actions {
+            display: flex;
+            gap: 1rem;
         }
 
         /* --- Notifikasi --- */
         #notification-popup {
             position: fixed;
-            top: 20px;
-            right: -400px; /* Mulai di luar layar */
-            width: 350px;
-            background: var(--color-bg-panel);
-            border: 1px solid var(--color-success);
+            top: 2rem;
+            right: 2rem;
+            background: var(--color-bg);
+            border: 1px solid var(--color-primary);
             border-radius: 8px;
             padding: 1.5rem;
-            box-shadow: 0 0 20px var(--color-success);
-            z-index: 9999;
-            transition: right 0.5s ease-out;
-            cursor: pointer;
-            animation: pulseGlowSuccess 2s infinite alternate;
+            width: 350px;
+            box-shadow: 0 0 25px var(--color-glow);
+            z-index: 2000;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: glow-pulse 1.5s infinite alternate;
         }
-
         #notification-popup.show {
-            right: 20px; /* Muncul ke layar */
+            transform: translateX(0);
+            opacity: 1;
         }
-        
+        @keyframes glow-pulse {
+            from { box-shadow: 0 0 25px var(--color-glow); }
+            to { box-shadow: 0 0 40px var(--color-secondary); }
+        }
         #notification-popup h3 {
-            color: var(--color-success);
+            font-size: 1.2rem;
             margin-bottom: 0.5rem;
         }
-
-        .notification-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            border: 1px solid var(--color-primary);
-            border-radius: 5px;
-            margin-bottom: 0.5rem;
-            background: rgba(0, 255, 255, 0.05);
-        }
-        
-        .notification-item p {
-            margin: 0;
+        #notification-popup p {
             font-size: 0.9rem;
-        }
-        
-        .notification-item small {
             color: var(--color-text-dark);
         }
 
+        /* Halaman Notifikasi */
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .notification-item {
+            background: rgba(10, 10, 30, 0.7);
+            border: 1px solid var(--color-primary);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .notification-item:hover {
+            box-shadow: 0 0 15px var(--color-glow);
+        }
+        .notification-item strong {
+            color: var(--color-secondary);
+        }
+        .notification-item p {
+            margin: 0.25rem 0;
+            color: var(--color-text);
+        }
+        .notification-item small {
+            color: var(--color-text-dark);
+            font-size: 0.85rem;
+        }
+        .notification-item .btn-icon {
+            font-size: 1.5rem;
+            color: var(--color-danger);
+        }
+
         /* --- Modal --- */
-        #modal-container {
+        #modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(5px);
-            display: none; /* Dikelola JS */
-            justify-content: center;
-            align-items: center;
             z-index: 1000;
+            display: none; /* Diubah oleh JS */
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        
-        #modal-container.show {
-            display: flex;
+        #modal-overlay.show {
+            display: block;
+            opacity: 1;
         }
 
         .modal-content {
@@ -541,6 +619,18 @@
             max-height: 90vh; /* Maksimal 90% tinggi layar */
             display: flex;
             flex-direction: column;
+
+            /* Posisi di tengah layar */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translate(-50%, -60%); opacity: 0; }
+            to { transform: translate(-50%, -50%); opacity: 1; }
         }
 
         .modal-header {
@@ -555,12 +645,11 @@
         }
         
         .modal-header h2 {
-            margin: 0;
+            font-size: 1.8rem;
         }
-
         #modal-close {
             font-size: 2rem;
-            color: var(--color-text);
+            color: var(--color-primary);
             cursor: pointer;
             background: none;
             border: none;
@@ -574,6 +663,17 @@
             overflow-y: auto;
             padding-right: 0.5rem; /* Memberi ruang untuk scrollbar */
         }
+        
+        /* [BARU] Styling untuk tombol konfirmasi di modal */
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .modal-actions .btn {
+            width: auto; /* Tombol di modal tidak perlu full-width */
+        }
 
         /* --- Lain-lain --- */
         #loading-overlay {
@@ -582,1773 +682,1912 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 12, 26, 0.9);
-            backdrop-filter: blur(5px);
-            display: none; /* Dikelola JS */
-            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
             align-items: center;
-            z-index: 9998;
-            font-family: var(--font-primary);
-            font-size: 1.5rem;
-            color: var(--color-primary);
-            text-shadow: 0 0 10px var(--color-glow);
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
         }
         #loading-overlay.show {
-            display: flex;
+            opacity: 1;
+            pointer-events: all;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid var(--color-text-dark);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .alert-message {
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-        .alert-success {
-            background: rgba(0, 255, 127, 0.1);
-            border: 1px solid var(--color-success);
-            color: var(--color-success);
-        }
-        .alert-danger {
-            background: rgba(255, 0, 77, 0.1);
-            border: 1px solid var(--color-danger);
-            color: var(--color-danger);
-        }
-        
-        /* Animasi Glow */
-        @keyframes pulseGlow {
-            from { box-shadow: 0 0 10px var(--color-glow), 0 0 15px var(--color-glow) inset; }
-            to { box-shadow: 0 0 20px var(--color-primary), 0 0 30px var(--color-primary) inset; }
-        }
-        @keyframes pulseGlowSuccess {
-            from { box-shadow: 0 0 15px var(--color-success); }
-            to { box-shadow: 0 0 30px var(--color-success); }
-        }
-        
-        /* Scrollbar kustom */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--color-bg);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--color-primary);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--color-success);
+        /* --- Responsif --- */
+        @media (max-width: 768px) {
+            #dashboard-nav {
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: 500;
+                transform: translateX(-100%);
+                box-shadow: 10px 0 20px rgba(0, 255, 255, 0.1);
+            }
+            #dashboard-nav.show {
+                transform: translateX(0);
+            }
+            #dashboard-main {
+                padding: 1.5rem;
+            }
+            #dashboard-header h1 {
+                font-size: 2rem;
+            }
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            #mobile-menu-toggle {
+                display: block;
+                z-index: 501; /* Di atas nav saat tertutup */
+            }
+            /* [PERBAIKAN] Hapus padding 0 di .page agar auth-page tetap ter-padding */
+            /* .page {
+                padding: 0; 
+            } */
+            #auth-page {
+                padding: 1rem; /* Padding untuk auth tetap ada */
+            }
+            /* [PERBAIKAN] Pastikan dashboard-page tidak memiliki padding ganda di mobile */
+            #dashboard-page {
+                padding: 0;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .page-header .btn, .header-actions .btn {
+                width: 100%;
+            }
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+            }
         }
 
     </style>
 </head>
 <body>
 
-    <!-- ===== Halaman Awal (Pilihan Login/Registrasi) ===== -->
-    <div id="auth-container" class="page active">
-        <div class="auth-box">
-            <h1>Penjadwalan Kelas</h1>
-            <div class="auth-options">
-                <button class="btn btn-full" onclick="showPage('login-page')">Login</button>
-                <button class="btn btn-full btn-secondary" onclick="showPage('register-user-page')">Registrasi User (Siswa)</button>
-                <button class="btn btn-full btn-secondary" onclick="showPage('register-admin-page')">Registrasi Admin</button>
+    <!-- Kontainer Aplikasi Utama -->
+    <div class="app-container">
+
+        <!-- ===== HALAMAN LOGIN (DEFAULT) ===== -->
+        <div class="page" id="auth-page">
+            <div class="auth-box">
+                <form id="login-form">
+                    <h1>Penjadwalan Kelas</h1>
+                    <div class="form-group">
+                        <label for="login-name">Nama</label>
+                        <input type="text" id="login-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                    <div class="auth-links">
+                        <a href="#" onclick="showPage('register-user-page')">Registrasi User</a> |
+                        <a href="#" onclick="showPage('register-admin-page')">Registrasi Admin</a>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
 
-    <!-- ===== Halaman Login ===== -->
-    <div id="login-page" class="page">
-        <div class="auth-box">
-            <h1>LOGIN</h1>
-            <form id="login-form">
-                <div id="login-alert" class="alert-message" style="display: none;"></div>
-                <div class="form-group">
-                    <label for="login-name">Nama</label>
-                    <input type="text" id="login-name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-full">Login</button>
-            </form>
-            <div class="auth-switch">
-                <a onclick="showPage('auth-container')">&larr; Kembali</a>
+        <!-- ===== HALAMAN REGISTRASI USER ===== -->
+        <div class="page hidden" id="register-user-page">
+            <div class="auth-box">
+                <form id="register-user-form">
+                    <h1>Registrasi User</h1>
+                    <div class="form-group">
+                        <label for="register-user-name">Nama Lengkap</label>
+                        <input type="text" id="register-user-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-user-class">Kelas</label>
+                        <select id="register-user-class" class="form-control" required>
+                            <option value="">Pilih Kelas</option>
+                            <!-- Opsi kelas akan di-generate oleh JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-user-password">Password</label>
+                        <input type="password" id="register-user-password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn">Registrasi</button>
+                    <div class="auth-links">
+                        <a href="#" onclick="showPage('auth-page')">Kembali ke Login</a>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
 
-    <!-- ===== Halaman Registrasi User ===== -->
-    <div id="register-user-page" class="page">
-        <div class="auth-box">
-            <h1>REGISTRASI USER</h1>
-            <form id="register-user-form">
-                <div id="register-user-alert" class="alert-message" style="display: none;"></div>
-                <div class="form-group">
-                    <label for="register-user-name">Nama Lengkap</label>
-                    <input type="text" id="register-user-name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-user-class">Kelas</label>
-                    <select id="register-user-class" class="form-control" required>
-                        <option value="">-- Pilih Kelas --</option>
-                        <!-- Opsi kelas akan di-generate oleh JS -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="register-user-password">Password</label>
-                    <input type="password" id="register-user-password" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-full">Registrasi</button>
-            </form>
-            <div class="auth-switch">
-                <a onclick="showPage('auth-container')">&larr; Kembali</a>
+        <!-- ===== HALAMAN REGISTRASI ADMIN ===== -->
+        <div class="page hidden" id="register-admin-page">
+            <div class="auth-box">
+                <form id="register-admin-form">
+                    <h1>Registrasi Admin</h1>
+                    <div class="form-group">
+                        <label for="register-admin-name">Nama Lengkap</label>
+                        <input type="text" id="register-admin-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-admin-password">Password</label>
+                        <input type="password" id="register-admin-password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn">Registrasi</button>
+                    <div class="auth-links">
+                        <a href="#" onclick="showPage('auth-page')">Kembali ke Login</a>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
 
-    <!-- ===== Halaman Registrasi Admin ===== -->
-    <div id="register-admin-page" class="page">
-        <div class="auth-box">
-            <h1>REGISTRASI ADMIN</h1>
-            <form id="register-admin-form">
-                <div id="register-admin-alert" class="alert-message" style="display: none;"></div>
-                <div class="form-group">
-                    <label for="register-admin-name">Nama Lengkap</label>
-                    <input type="text" id="register-admin-name" class="form-control" required>
+        <!-- ===== HALAMAN DASHBOARD ===== -->
+        <div class="page hidden" id="dashboard-page">
+            <!-- Navigasi Samping -->
+            <nav id="dashboard-nav">
+                <h2>Penjadwalan Kelas</h2>
+                
+                <!-- Menu User -->
+                <div class="nav-group" id="nav-user-group">
+                    <h4>Menu User</h4>
+                    <a class="nav-item active" data-page="home">Beranda</a>
+                    <a class="nav-item" data-page="schedule">Jadwal Kelas</a>
+                    <a class="nav-item" data-page="tasks">Tugas</a>
+                    <a class="nav-item" data-page="notes">Catatan Pribadi</a>
+                    <a class="nav-item" data-page="notifications">
+                        Notifikasi
+                        <span class="notif-badge" id="notif-badge" style="display: none;">0</span>
+                    </a>
                 </div>
-                <div class="form-group">
-                    <label for="register-admin-password">Password</label>
-                    <input type="password" id="register-admin-password" class="form-control" required>
+
+                <!-- Menu Admin -->
+                <div class="nav-group" id="nav-admin-group" style="display: none;">
+                    <h4>Menu Admin</h4>
+                    <a class="nav-item" data-page="manage-schedule">Kelola Jadwal</a>
+                    <a class="nav-item" data-page="manage-tasks">Kelola Tugas</a>
+                    <a class="nav-item" data-page="manage-users">Kelola User</a>
                 </div>
-                <button type="submit" class="btn btn-full">Registrasi</button>
-            </form>
-            <div class="auth-switch">
-                <a onclick="showPage('auth-container')">&larr; Kembali</a>
-            </div>
+
+                <!-- Menu Super Admin -->
+                <div class="nav-group" id="nav-superadmin-group" style="display: none;">
+                    <h4>Super Admin</h4>
+                    <a class="nav-item" data-page="manage-admins">Kelola Admin</a>
+                    <a class="nav-item" data-page="view-all-notes">Lihat Catatan User</a>
+                    <a class="nav-item" data-page="data-settings">Pengaturan Data</a>
+                </div>
+                
+                <!-- Tombol Logout -->
+                <div class="logout-btn-container">
+                    <button class="btn btn-danger" id="logout-btn" style="margin-bottom: 1rem;">Logout</button>
+                </div>
+            </nav>
+
+            <!-- Konten Utama -->
+            <main id="dashboard-main">
+                <!-- [PERBAIKAN] Header dipindahkan ke dalam #dashboard-main -->
+                <div id="dashboard-header">
+                    <!-- Tombol Toggle Menu Mobile -->
+                    <button id="mobile-menu-toggle">
+                        <!-- SVG Icon untuk Menu (Hamburger) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                        </svg>
+                    </button>
+                    <!-- Judul Halaman (akan diisi oleh JS, tapi bisa
+                         dihilangkan jika .page-header sudah cukup) -->
+                    <h1 id="dashboard-title-header" style="display: none;">Beranda</h1>
+                </div>
+
+                <!-- Konten dinamis akan dimuat di sini oleh JS -->
+                <div id="dashboard-content-area">
+                    <!-- Konten dari renderHome(), renderSchedule(), dll. akan masuk sini -->
+                </div>
+            </main>
         </div>
-    </div>
 
-    <!-- ===== Dashboard Utama ===== -->
-    <div id="dashboard-container" class="page">
-        <!-- Navigasi Samping -->
-        <nav id="dashboard-nav">
-            <div class="nav-header">
-                <h2 id="nav-header-title">[Penjadwalan Kelas]</h2>
-                <p id="nav-header-user">Memuat...</p>
-                <p id="nav-header-role">Role: Memuat...</p>
-            </div>
-            <ul class="nav-menu" id="nav-menu-main">
-                <!-- Link menu utama di-generate JS -->
-            </ul>
-            
-            <div id="nav-admin-group" style="display:none;">
-                <div class="nav-group">
-                    <h4 class="nav-group-title">Admin Menu</h4>
-                    <ul class="nav-menu" id="nav-menu-admin">
-                        <!-- Link menu admin di-generate JS -->
-                    </ul>
-                </div>
-            </div>
-
-            <!-- [FIX] Menambahkan container yang hilang untuk menu Super Admin -->
-            <div id="nav-superadmin-group" style="display:none;">
-                <div class="nav-group">
-                    <h4 class="nav-group-title">Super Admin Menu</h4>
-                    <ul class="nav-menu" id="nav-menu-superadmin">
-                        <!-- Link menu super admin di-generate JS -->
-                    </ul>
-                </div>
-            </div>
-
-            <button id="logout-btn" class="btn btn-full btn-danger" style="margin-top: 2rem; margin-bottom: 1rem;">Logout</button>
-        </nav>
-
-        <!-- Konten Utama Dashboard -->
-        <main id="dashboard-main">
-            
-            <!-- Halaman: Beranda -->
-            <div id="page-home" class="dashboard-page">
-                <div class="header-bar">
-                    <h1>Beranda</h1>
-                </div>
-                <div class="system-card">
-                    <h3 id="home-welcome-message">Selamat Datang, Hunter!</h3>
-                    <p>Anda telah terhubung ke [Penjadwalan Kelas]. Gunakan panel navigasi di sebelah kiri untuk mengakses menu.</p>
-                </div>
-                <div class="grid-container">
-                    <div class="system-card">
-                        <h3>Status Sistem</h3>
-                        <p>Koneksi: <span style="color: var(--color-success)">Aktif</span></p>
-                        <p>Total User Terdaftar: <span id="stat-total-users">0</span></p>
-                        <p>Menunggu Persetujuan: <span id="stat-pending-users">0</span></t>
-                    </div>
-                    <div class="system-card">
-                        <h3>Info Notifikasi</h3>
-                        <p>Notifikasi belum dibaca: <span id="stat-unread-notifications">0</span></p>
-                        <button class="btn" onclick="showDashboardPage('notifications')">Lihat Notifikasi</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Halaman: Jadwal (User) -->
-            <div id="page-schedule" class="dashboard-page">
-                <div class="header-bar">
-                    <h1 id="schedule-title">Jadwal Kelas</h1>
-                </div>
-                <div class="system-card">
-                    <div id="schedule-content">
-                        <!-- Konten jadwal di-generate JS -->
-                        <p>Memuat jadwal...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Halaman: Tugas (User) -->
-            <div id="page-tasks" class="dashboard-page">
-                <div class="header-bar">
-                    <h1 id="tasks-title">Tugas Kelas</h1>
-                </div>
-                <div class="system-card">
-                    <div id="tasks-content">
-                        <!-- Konten tugas di-generate JS -->
-                        <p>Memuat tugas...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Halaman: Catatan (User) -->
-            <div id="page-notes" class="dashboard-page">
-                <div class="header-bar">
-                    <h1>Catatan Pribadi</h1>
-                    <button class="btn" onclick="openNoteModal()">+ Catatan Baru</button>
-                </div>
-                <div class="system-card">
-                    <div id="notes-list" class="grid-container">
-                        <!-- Daftar catatan di-generate JS -->
-                        <p>Tidak ada catatan.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Halaman: Notifikasi (User) -->
-            <div id="page-notifications" class="dashboard-page">
-                <div class="header-bar">
-                    <h1>Riwayat Notifikasi</h1>
-                    <button class="btn btn-danger" onclick="clearAllNotifications()">Hapus Semua</button>
-                </div>
-                <div class="system-card">
-                    <div id="notifications-list">
-                        <!-- Daftar notifikasi di-generate JS -->
-                        <p>Tidak ada notifikasi.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Halaman: Persetujuan (Admin / Super Admin) -->
-            <div id="page-approval" class="dashboard-page">
-                <div class="header-bar">
-                    <h1>Persetujuan Akun</h1>
-                </div>
-                <div class="system-card">
-                    <h3>Menunggu Persetujuan</h3>
-                    <div id="approval-list">
-                        <!-- Daftar persetujuan di-generate JS -->
-                        <p>Tidak ada akun yang menunggu persetujuan.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Halaman: Manajemen Jadwal (Admin / Super Admin) -->
-            <div id="page-manage-schedule" class="dashboard-page">
-                <div class="header-bar">
-                    <h1>Manajemen Jadwal</h1>
-                    <button class="btn" onclick="openScheduleModal()">+ Tambah Jadwal</button>
-                </div>
-                <div class="system-card">
-                    <div class="form-group">
-                        <label for="schedule-filter-class">Filter per Kelas</label>
-                        <select id="schedule-filter-class" class="form-control">
-                            <!-- Opsi kelas di-generate JS -->
-                        </select>
-                    </div>
-                    <table class="system-table">
-                        <thead>
-                            <tr>
-                                <th>Hari</th>
-                                <th>Jam</th>
-                                <th>Mata Pelajaran</th>
-                                <th>Kelas</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="manage-schedule-table">
-                            <!-- Data tabel di-generate JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Halaman: Manajemen Tugas (Admin / Super Admin) -->
-            <div id="page-manage-tasks" class="dashboard-page">
-                <div class="header-bar">
-                    <h1>Manajemen Tugas</h1>
-                    <button class="btn" onclick="openTaskModal()">+ Tambah Tugas</button>
-                </div>
-                <div class="system-card">
-                    <div class="form-group">
-                        <label for="task-filter-class">Filter per Kelas</label>
-                        <select id="task-filter-class" class="form-control">
-                            <!-- Opsi kelas di-generate JS -->
-                        </select>
-                    </div>
-                    <table class="system-table">
-                        <thead>
-                            <tr>
-                                <th>Tugas</th>
-                                <th>Mata Pelajaran</th>
-                                <th>Deadline</th>
-                                <th>Kelas</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="manage-tasks-table">
-                            <!-- Data tabel di-generate JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Halaman: Manajemen User (Admin / Super Admin) -->
-            <div id="page-manage-users" class="dashboard-page">
-                <div class="header-bar">
-                    <h1>Manajemen User</h1>
-                    <button class="btn" onclick="openImportModal('user')">+ Import User (Excel)</button>
-                </div>
-                <div class="system-card">
-                    <table class="system-table">
-                        <thead>
-                            <tr>
-                                <th>Nama</th>
-                                <th>Role</th>
-                                <th>Kelas</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="manage-users-table">
-                            <!-- Data tabel di-generate JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Halaman: Lihat Catatan (Super Admin) -->
-            <div id="page-view-all-notes" class="dashboard-page">
-                <div class="header-bar">
-                    <h1>Semua Catatan User</h1>
-                </div>
-                <div class="system-card">
-                    <div class="form-group">
-                        <label for="notes-filter-user">Filter per User</label>
-                        <select id="notes-filter-user" class="form-control">
-                            <option value="all">Semua User</option>
-                            <!-- Opsi user di-generate JS -->
-                        </select>
-                    </div>
-                    <div id="all-notes-list">
-                        <!-- Daftar catatan di-generate JS -->
-                        <p>Pilih user untuk melihat catatan.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Halaman: Manajemen Admin (Super Admin) -->
-            <div id="page-manage-admins" class="dashboard-page">
-                <div class="header-bar">
-                    <h1>Manajemen Admin</h1>
-                    <button class="btn" onclick="openImportModal('admin')">+ Import Admin (Excel)</button>
-                </div>
-                <div class="system-card">
-                     <table class="system-table">
-                        <thead>
-                            <tr>
-                                <th>Nama</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="manage-admins-table">
-                            <!-- Data tabel di-generate JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Halaman: Hapus Data (Super Admin) -->
-            <div id="page-delete-data" class="dashboard-page">
-                <div class="header-bar">
-                    <h1>Hapus Data (Danger Zone)</h1>
-                </div>
-                <div class="system-card" style="border-color: var(--color-danger); box-shadow: 0 0 15px var(--color-glow-danger);">
-                    <h3>Hapus Data Massal</h3>
-                    <p>Tindakan ini tidak dapat diurungkan. Harap berhati-hati.</p>
-                    <div class="form-group">
-                        <label for="delete-data-class">Hapus Data per Kelas</label>
-                        <select id="delete-data-class" class="form-control">
-                            <option value="">-- Pilih Kelas --</option>
-                            <!-- Opsi kelas di-generate JS -->
-                        </select>
-                        <button class="btn btn-danger" style="margin-top: 0.5rem;" onclick="deleteDataByClass()">Hapus Data Kelas Ini</button>
-                    </div>
-                    <div class="form-group">
-                        <label>Hapus Semua Data</label>
-                        <p>Ini akan menghapus SEMUA jadwal, tugas, dan catatan.</p>
-                        <button class="btn btn-danger" onclick="deleteAllData()">Hapus Semua Jadwal & Tugas</button>
-                    </div>
-                     <div class="form-group">
-                        <label>Reset Total (Factory Reset)</label>
-                        <p>Ini akan menghapus SEMUA user (kecuali Super Admin), jadwal, tugas, dan catatan.</p>
-                        <button class="btn btn-danger" onclick="factoryReset()">Factory Reset Sistem</button>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </div>
+    </div> <!-- Akhir .app-container -->
 
     <!-- ===== Notifikasi Pop-up ===== -->
     <div id="notification-popup">
-        <h3>[Penjadwalan Kelas] Notifikasi Baru!</h3>
+        <h3 id="notification-popup-title">Penjadwalan Kelas</h3>
         <p id="notification-popup-message">Ini adalah pesan notifikasi.</p>
     </div>
 
-    <!-- ===== Modal Universal ===== -->
-    <div id="modal-container">
-        <div class="modal-content">
+    <!-- ===== Modal ===== -->
+    <div id="modal-overlay">
+        <div class="modal-content" id="modal-content">
             <div class="modal-header">
                 <h2 id="modal-title">Judul Modal</h2>
-                <button id="modal-close" onclick="hideModal()">&times;</button>
+                <button id="modal-close" class="btn-icon">&times;</button>
             </div>
             <div id="modal-body">
-                <!-- Konten modal di-generate JS -->
+                <!-- Konten modal dinamis akan dimuat di sini -->
             </div>
         </div>
     </div>
-    
+
     <!-- ===== Loading Overlay ===== -->
     <div id="loading-overlay">
-        <p>MEMPROSES...</p>
+        <div class="spinner"></div>
     </div>
 
+
+    <!-- =================================================================
+          SCRIPT JAVASCRIPT UTAMA
+    ================================================================== -->
     <script>
-        // --- Inisialisasi Aplikasi ---
         document.addEventListener('DOMContentLoaded', () => {
-            initializeApp();
-        });
 
-        // Variabel Global
-        let db; // Database simulasi (dari localStorage)
-        let currentUser = null; // User yang sedang login
-        const KELAS_LIST = generateKelasList();
-
-        /**
-         * Menginisialisasi aplikasi, memuat database, dan memeriksa sesi
-         */
-        function initializeApp() {
-            loadDatabase();
-            populateClassSelects();
-            checkSession();
+            // --- ELEMEN DOM ---
+            const appContainer = document.querySelector('.app-container');
+            const loginForm = document.getElementById('login-form');
+            const registerUserForm = document.getElementById('register-user-form');
+            const registerAdminForm = document.getElementById('register-admin-form');
+            const dashboardNav = document.getElementById('dashboard-nav');
+            const dashboardMain = document.getElementById('dashboard-main');
+            // [PERBAIKAN] Targetkan area konten spesifik
+            const dashboardContentArea = document.getElementById('dashboard-content-area'); 
+            const logoutBtn = document.getElementById('logout-btn');
+            const notifBadge = document.getElementById('notif-badge');
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalClose = document.getElementById('modal-close');
+            const loadingOverlay = document.getElementById('loading-overlay');
             
-            // Event Listeners untuk form
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            document.getElementById('register-user-form').addEventListener('submit', handleRegisterUser);
-            document.getElementById('register-admin-form').addEventListener('submit', handleRegisterAdmin);
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
-            
-            // Event delegation untuk navigasi dashboard
-            document.getElementById('dashboard-nav').addEventListener('click', (e) => {
-                if (e.target.tagName === 'A' && e.target.dataset.page) {
-                    e.preventDefault();
-                    showDashboardPage(e.target.dataset.page);
-                }
-            });
-            
-            // Event listener untuk filter
-            document.getElementById('schedule-filter-class').addEventListener('change', (e) => renderManageSchedule(e.target.value));
-            document.getElementById('task-filter-class').addEventListener('change', (e) => renderManageTasks(e.target.value));
-            document.getElementById('notes-filter-user').addEventListener('change', (e) => renderViewAllNotes(e.target.value));
-            
-            // Menutup popup notifikasi saat diklik
-            document.getElementById('notification-popup').addEventListener('click', () => {
-                document.getElementById('notification-popup').classList.remove('show');
-            });
-        }
+            // --- STATE APLIKASI ---
+            let db = {}; // Database in-memory (disimpan di localStorage)
+            let currentUser = null; // User yang sedang login
+            let activePage = 'home'; // Halaman dashboard yang aktif
+            const KELAS_LIST = [];
 
-        // --- Utilitas Database (localStorage) ---
-
-        /**
-         * Memuat database dari localStorage. Membuat Super Admin jika belum ada.
-         */
-        function loadDatabase() {
-            db = JSON.parse(localStorage.getItem('soloLevelingAppDB')) || {
-                users: [],
-                schedules: [],
-                tasks: [],
-                notes: [],
-                notifications: [],
-            };
-
-            // Membuat Super Admin jika belum ada
-            if (!db.users.find(u => u.role === 'superadmin')) {
-                db.users.push({
-                    id: 'u-' + Date.now(),
-                    name: 'superadmin',
-                    password: 'superadmin', // Ganti password ini di dunia nyata!
-                    role: 'superadmin',
-                    kelas: null,
-                    approved: true
+            // --- KONSTANTA & INISIALISASI ---
+            
+            // Fungsi untuk generate daftar kelas
+            function generateKelasList() {
+                const tingkatan = ['X', 'XI', 'XII'];
+                const jurusan = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+                tingkatan.forEach(t => {
+                    jurusan.forEach(j => {
+                        KELAS_LIST.push(`${t}-${j}`);
+                    });
                 });
-                saveDatabase();
             }
-        }
 
-        /**
-         * Menyimpan state database saat ini ke localStorage
-         */
-        function saveDatabase() {
-            localStorage.setItem('soloLevelingAppDB', JSON.stringify(db));
-        }
-        
-        // --- Utilitas Bantuan ---
-
-        /**
-         * Menampilkan overlay loading
-         */
-        function showLoading(show) {
-            document.getElementById('loading-overlay').classList.toggle('show', show);
-        }
-
-        /**
-         * Menampilkan pesan alert
-         * @param {string} elementId - ID elemen alert
-         * @param {string} message - Pesan yang ditampilkan
-         * @param {string} type - 'success' atau 'danger'
-         */
-        function showAlert(elementId, message, type = 'danger') {
-            const alertBox = document.getElementById(elementId);
-            alertBox.textContent = message;
-            alertBox.className = `alert-message alert-${type}`;
-            alertBox.style.display = 'block';
-        }
-
-        /**
-         * Menyembunyikan pesan alert
-         * @param {string} elementId - ID elemen alert
-         */
-        function hideAlert(elementId) {
-            document.getElementById(elementId).style.display = 'none';
-        }
-
-        /**
-         * Menampilkan halaman tertentu dan menyembunyikan yang lain
-         * @param {string} pageId - ID elemen halaman yang akan ditampilkan
-         */
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            const newPage = document.getElementById(pageId);
-            if (newPage) {
-                newPage.classList.add('active');
-            }
-        }
-        
-        /**
-         * Membuat daftar kelas dari X-A hingga XII-L
-         * @returns {string[]} - Array berisi nama kelas
-         */
-        function generateKelasList() {
-            const tingkat = ['X', 'XI', 'XII'];
-            const jurusan = 'ABCDEFGHIJKL'.split('');
-            const list = [];
-            tingkat.forEach(t => {
-                jurusan.forEach(j => {
-                    list.push(`${t}-${j}`);
-                });
-            });
-            return list;
-        }
-
-        /**
-         * Mengisi semua elemen <select> dengan daftar kelas
-         */
-        function populateClassSelects() {
-            const selects = document.querySelectorAll('select[id*="class"]');
-            selects.forEach(select => {
-                // Jangan kosongkan jika sudah ada opsi default
-                if(select.options.length <= 1) {
+            // Fungsi untuk mengisi <select> kelas
+            function populateKelasSelect() {
+                const selectEl = document.getElementById('register-user-class');
+                if (selectEl) {
+                    // [FIX] Bersihkan opsi lama jika ada (meskipun dlm kasus ini DOMContentLoaded)
+                    selectEl.innerHTML = '<option value="">Pilih Kelas</option>'; 
                     KELAS_LIST.forEach(kelas => {
                         const option = document.createElement('option');
                         option.value = kelas;
                         option.textContent = kelas;
-                        select.appendChild(option);
+                        selectEl.appendChild(option);
                     });
                 }
-            });
-        }
-        
-        /**
-         * Mengonversi timestamp menjadi format yang mudah dibaca
-         */
-        function formatTanggal(timestamp) {
-            const d = new Date(timestamp);
-            return `${d.toLocaleDateString('id-ID')} ${d.toLocaleTimeString('id-ID')}`;
-        }
-        
-        // --- Sistem Autentikasi dan Sesi ---
+            }
 
-        /**
-         * Memeriksa apakah ada sesi login yang tersimpan
-         */
-        function checkSession() {
-            const userJson = sessionStorage.getItem('soloLevelingUser');
-            if (userJson) {
-                currentUser = JSON.parse(userJson);
-                // Sinkronkan data user (jika ada perubahan dari admin)
-                const dbUser = db.users.find(u => u.id === currentUser.id);
-                if (dbUser) {
-                    currentUser = dbUser; // Ambil data terbaru
-                    sessionStorage.setItem('soloLevelingUser', JSON.stringify(currentUser));
-                    navigateToDashboard();
+            // --- FUNGSI UTAMA (INIT) ---
+            function initializeApp() {
+                generateKelasList();
+                populateKelasSelect();
+                loadDatabase();
+                setupEventListeners();
+                checkSession();
+            }
+
+            // --- MANAJEMEN DATABASE (LOCALSTORAGE) ---
+            function loadDatabase() {
+                const data = localStorage.getItem('system_db');
+                if (data) {
+                    db = JSON.parse(data);
+                    // [FIX] Pastikan struktur db minimal ada
+                    db.users = db.users || [];
+                    db.schedule = db.schedule || [];
+                    db.tasks = db.tasks || [];
+                    db.notes = db.notes || [];
+                    db.notifications = db.notifications || {};
                 } else {
-                    // User dihapus, paksa logout
-                    handleLogout();
+                    // Buat database baru jika tidak ada
+                    db = {
+                        users: [
+                            // Admin Utama
+                            { 
+                                id: 'user-superadmin', 
+                                name: 'superadmin', 
+                                password: 'superadmin', // Diubah sesuai permintaan
+                                role: 'superadmin', 
+                                status: 'approved',
+                                kelas: null
+                            }
+                        ],
+                        schedule: [], // { id, kelas, hari, jam, mapel, guru }
+                        tasks: [], // { id, kelas, mapel, deadline, deskripsi }
+                        notes: [], // { id, userId, title, content, timestamp }
+                        notifications: {} // { "userId-123": [ { id, type, title, message, timestamp, read } ] }
+                    };
+                    saveDatabase();
                 }
-            } else {
-                showPage('auth-container');
-            }
-        }
-
-        /**
-         * Menangani proses login
-         */
-        function handleLogin(e) {
-            e.preventDefault();
-            hideAlert('login-alert');
-            const name = document.getElementById('login-name').value;
-            const pass = document.getElementById('login-password').value;
-
-            const user = db.users.find(u => u.name === name && u.password === pass);
-
-            if (!user) {
-                showAlert('login-alert', 'Nama atau password salah.');
-                return;
             }
 
-            if (!user.approved) {
-                showAlert('login-alert', 'Akun Anda belum disetujui oleh admin.');
-                return;
+            function saveDatabase() {
+                localStorage.setItem('system_db', JSON.stringify(db));
             }
 
-            currentUser = user;
-            sessionStorage.setItem('soloLevelingUser', JSON.stringify(user));
-            navigateToDashboard();
-        }
-
-        /**
-         * Menangani registrasi user (siswa)
-         */
-        function handleRegisterUser(e) {
-            e.preventDefault();
-            hideAlert('register-user-alert');
-            const name = document.getElementById('register-user-name').value;
-            const kelas = document.getElementById('register-user-class').value;
-            const pass = document.getElementById('register-user-password').value;
-
-            if (!name || !kelas || !pass) {
-                showAlert('register-user-alert', 'Semua field harus diisi.');
-                return;
-            }
-
-            if (db.users.find(u => u.name === name)) {
-                showAlert('register-user-alert', 'Nama sudah digunakan.');
-                return;
-            }
-
-            db.users.push({
-                id: 'u-' + Date.now(),
-                name: name,
-                password: pass,
-                role: 'user',
-                kelas: kelas,
-                approved: false
-            });
-            saveDatabase();
+            // --- MANAJEMEN SESI & AUTENTIKASI ---
             
-            showAlert('register-user-alert', 'Registrasi berhasil! Menunggu persetujuan admin.', 'success');
-            document.getElementById('register-user-form').reset();
-            
-            setTimeout(() => {
-                hideAlert('register-user-alert');
-                showPage('auth-container');
-            }, 2000);
-        }
-
-        /**
-         * Menangani registrasi admin
-         */
-        function handleRegisterAdmin(e) {
-            e.preventDefault();
-            hideAlert('register-admin-alert');
-            const name = document.getElementById('register-admin-name').value;
-            const pass = document.getElementById('register-admin-password').value;
-
-            if (db.users.find(u => u.name === name)) {
-                showAlert('register-admin-alert', 'Nama sudah digunakan.');
-                return;
+            function checkSession() {
+                const session = sessionStorage.getItem('system_session');
+                if (session) {
+                    try {
+                        const userId = JSON.parse(session).userId;
+                        const user = db.users.find(u => u.id === userId);
+                        if (user) {
+                            currentUser = user;
+                            navigateToDashboard();
+                        } else {
+                            // User di session tidak ditemukan di DB (mungkin dihapus)
+                            destroySession();
+                        }
+                    } catch (e) {
+                        // Session korup
+                        destroySession();
+                    }
+                }
             }
 
-            db.users.push({
-                id: 'u-' + Date.now(),
-                name: name,
-                password: pass,
-                role: 'admin',
-                kelas: null,
-                approved: false
-            });
-            saveDatabase();
-            
-            showAlert('register-admin-alert', 'Registrasi berhasil! Menunggu persetujuan Super Admin.', 'success');
-            document.getElementById('register-admin-form').reset();
-            
-            setTimeout(() => {
-                hideAlert('register-admin-alert');
-                showPage('auth-container');
-            }, 2000);
-        }
+            function createSession(user) {
+                sessionStorage.setItem('system_session', JSON.stringify({ userId: user.id }));
+                currentUser = user;
+            }
 
-        /**
-         * Menangani proses logout
-         */
-        function handleLogout() {
-            const page = document.getElementById('dashboard-container');
-            page.classList.add('exiting'); // Mulai animasi keluar
-            
-            setTimeout(() => {
+            function destroySession() {
+                sessionStorage.removeItem('system_session');
                 currentUser = null;
-                sessionStorage.removeItem('soloLevelingUser');
-                page.classList.remove('exiting');
-                showPage('auth-container');
-                // Hentikan animasi di dashboard
-                document.getElementById('dashboard-container').style.opacity = '0';
-            }, 500); // Sesuaikan dengan durasi transisi CSS
-        }
-
-        // --- Navigasi dan Render Dashboard ---
-
-        /**
-         * Mengarahkan ke dashboard setelah login berhasil
-         */
-        function navigateToDashboard() {
-            renderDashboardNav();
-            showDashboardPage('home'); // Halaman default
-            showPage('dashboard-container');
-            // Animasi masuk dashboard
-            setTimeout(() => {
-                document.getElementById('dashboard-container').style.opacity = '1';
-            }, 50);
-        }
-
-        /**
-         * Merender menu navigasi berdasarkan role user
-         */
-        function renderDashboardNav() {
-            document.getElementById('nav-header-user').textContent = currentUser.name;
-            document.getElementById('nav-header-role').textContent = `Role: ${currentUser.role}`;
-
-            const menuMain = document.getElementById('nav-menu-main');
-            const menuAdmin = document.getElementById('nav-menu-admin');
-            const menuSuperAdmin = document.getElementById('nav-menu-superadmin');
-            
-            menuMain.innerHTML = `
-                <li><a href="#" data-page="home" class="active">Beranda</a></li>
-                <li><a href="#" data-page="schedule">Jadwal</a></li>
-                <li><a href="#" data-page="tasks">Tugas</a></li>
-                <li><a href="#" data-page="notes">Catatan Pribadi</a></li>
-                <li><a href="#" data-page="notifications">Notifikasi</a></li>
-            `;
-            
-            // Menu khusus User
-            if(currentUser.role === 'user') {
-                document.getElementById('nav-admin-group').style.display = 'none';
-                document.getElementById('nav-superadmin-group').style.display = 'none';
             }
 
-            // Menu khusus Admin
-            if (currentUser.role === 'admin' || currentUser.role === 'superadmin') {
-                document.getElementById('nav-admin-group').style.display = 'block';
-                menuAdmin.innerHTML = `
-                    <li><a href="#" data-page="approval">Persetujuan User</a></li>
-                    <li><a href="#" data-page="manage-schedule">Manajemen Jadwal</a></li>
-                    <li><a href="#" data-page="manage-tasks">Manajemen Tugas</a></li>
-                    <li><a href="#" data-page="manage-users">Manajemen User</a></li>
-                `;
-            } else {
-                 document.getElementById('nav-admin-group').style.display = 'none';
-            }
-            
-            // Menu khusus Super Admin
-            if (currentUser.role === 'superadmin') {
-                document.getElementById('nav-superadmin-group').style.display = 'block';
-                menuSuperAdmin.innerHTML = `
-                    <li><a href="#" data-page="manage-admins">Manajemen Admin</a></li>
-                    <li><a href="#" data-page="view-all-notes">Lihat Catatan User</a></li>
-                    <li><a href="#" data-page="delete-data">Hapus Data</a></li>
-                `;
-                // Super admin juga bisa menyetujui admin
-                menuAdmin.innerHTML = `
-                    <li><a href="#" data-page="approval">Persetujuan Akun</a></li>
-                    ${menuAdmin.innerHTML.substring(menuAdmin.innerHTML.indexOf('</li>')+5)}
-                `;
-            } else {
-                document.getElementById('nav-superadmin-group').style.display = 'none';
-            }
-        }
+            // --- EVENT LISTENERS ---
+            function setupEventListeners() {
+                loginForm.addEventListener('submit', handleLogin);
+                registerUserForm.addEventListener('submit', handleRegisterUser);
+                registerAdminForm.addEventListener('submit', handleRegisterAdmin);
+                logoutBtn.addEventListener('click', handleLogout);
+                dashboardNav.addEventListener('click', handleNavClick);
+                modalClose.addEventListener('click', closeModal);
+                modalOverlay.addEventListener('click', (e) => {
+                    if (e.target === modalOverlay) closeModal();
+                });
 
-        /**
-         * Menampilkan sub-halaman di dashboard
-         * @param {string} pageName - Nama halaman (cth: 'home', 'schedule')
-         */
-        function showDashboardPage(pageName) {
-            // Sembunyikan semua halaman
-            document.querySelectorAll('.dashboard-page').forEach(page => {
-                page.classList.remove('active');
-            });
-            // Update link aktif di nav
-            document.querySelectorAll('#dashboard-nav a').forEach(link => {
-                link.classList.toggle('active', link.dataset.page === pageName);
-            });
-            
-            // Panggil fungsi render yang sesuai
-            switch(pageName) {
-                case 'home':
-                    renderHome();
-                    break;
-                case 'schedule':
-                    renderScheduleView();
-                    break;
-                case 'tasks':
-                    renderTaskView();
-                    break;
-                case 'notes':
-                    renderNotes();
-                    break;
-                case 'notifications':
-                    renderNotifications();
-                    break;
-                case 'approval':
-                    renderApproval();
-                    break;
-                case 'manage-schedule':
-                    renderManageSchedule('all');
-                    break;
-                case 'manage-tasks':
-                    renderManageTasks('all');
-                    break;
-                case 'manage-users':
-                    renderManageUsers();
-                    break;
-                case 'manage-admins':
-                    renderManageAdmins();
-                    break;
-                case 'view-all-notes':
-                    renderViewAllNotes('all');
-                    break;
-                case 'delete-data':
-                    // Tidak perlu render, halaman statis
-                    break;
-            }
-
-            // Tampilkan halaman yang dipilih
-            const newPage = document.getElementById(`page-${pageName}`);
-            if (newPage) {
-                newPage.classList.add('active');
-            }
-        }
-        
-        // --- Render Halaman Dashboard ---
-        
-        function renderHome() {
-            document.getElementById('home-welcome-message').textContent = `Selamat Datang, ${currentUser.name}!`;
-            document.getElementById('stat-total-users').textContent = db.users.length;
-            document.getElementById('stat-pending-users').textContent = db.users.filter(u => !u.approved).length;
-            
-            const userNotifications = db.notifications.filter(n => (n.targetRole === currentUser.role || n.targetUserId === currentUser.id) && 
-                (n.targetKelas === currentUser.kelas || !n.targetKelas) &&
-                !n.readBy.includes(currentUser.id));
-            document.getElementById('stat-unread-notifications').textContent = userNotifications.length;
-        }
-        
-        function renderScheduleView() {
-            document.getElementById('schedule-title').textContent = `Jadwal Kelas ${currentUser.kelas}`;
-            const scheduleContent = document.getElementById('schedule-content');
-            const userSchedules = db.schedules
-                .filter(s => s.kelas === currentUser.kelas)
-                .sort((a, b) => a.hari - b.hari || a.jam.localeCompare(b.jam));
-            
-            if(userSchedules.length === 0) {
-                scheduleContent.innerHTML = '<p>Jadwal untuk kelas Anda belum ditambahkan.</p>';
-                return;
-            }
-            
-            // Grupkan berdasarkan hari
-            const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-            let html = '';
-            for(let i=0; i < 7; i++) {
-                const daySchedules = userSchedules.filter(s => s.hari == i);
-                if(daySchedules.length > 0) {
-                    html += `<div class="system-card" style="border-color: var(--color-secondary);"><h3>${days[i]}</h3>`;
-                    html += '<table class="system-table">';
-                    html += '<thead><tr><th>Jam</th><th>Mata Pelajaran</th></tr></thead><tbody>';
-                    daySchedules.forEach(s => {
-                        html += `<tr><td>${s.jam}</td><td>${s.mapel}</td></tr>`;
+                // Event listener untuk mobile menu
+                if(mobileMenuToggle) {
+                    mobileMenuToggle.addEventListener('click', () => {
+                        dashboardNav.classList.toggle('show');
                     });
-                    html += '</tbody></table></div>';
                 }
             }
-            scheduleContent.innerHTML = html;
-        }
 
-        function renderTaskView() {
-            document.getElementById('tasks-title').textContent = `Tugas Kelas ${currentUser.kelas}`;
-            const tasksContent = document.getElementById('tasks-content');
-            const userTasks = db.tasks.filter(t => t.kelas === currentUser.kelas);
-            
-            if(userTasks.length === 0) {
-                tasksContent.innerHTML = '<p>Tidak ada tugas untuk kelas Anda saat ini.</p>';
-                return;
+            // --- HANDLER AUTENTIKASI ---
+            function handleLogin(e) {
+                e.preventDefault();
+                const name = document.getElementById('login-name').value;
+                const pass = document.getElementById('login-password').value;
+
+                const user = db.users.find(u => u.name === name && u.password === pass);
+
+                if (!user) {
+                    showNotification('Login Gagal', 'Nama atau password salah.', 'danger');
+                    return;
+                }
+
+                if (user.status === 'pending') {
+                    showNotification('Login Gagal', 'Akun Anda belum disetujui oleh admin.', 'danger');
+                    return;
+                }
+
+                if (user.status === 'rejected') {
+                    showNotification('Login Gagal', 'Pendaftaran akun Anda ditolak.', 'danger');
+                    return;
+                }
+
+                // Login sukses
+                createSession(user);
+                navigateToDashboard();
+            }
+
+            function handleRegisterUser(e) {
+                e.preventDefault();
+                const name = document.getElementById('register-user-name').value;
+                const kelas = document.getElementById('register-user-class').value;
+                const pass = document.getElementById('register-user-password').value;
+
+                if (db.users.find(u => u.name === name)) {
+                    showNotification('Registrasi Gagal', 'Nama sudah digunakan.', 'danger');
+                    return;
+                }
+                
+                if (!kelas) {
+                    showNotification('Registrasi Gagal', 'Silakan pilih kelas Anda.', 'danger');
+                    return;
+                }
+
+                const newUser = {
+                    id: `user-${Date.now()}`,
+                    name: name,
+                    password: pass,
+                    role: 'user',
+                    status: 'pending',
+                    kelas: kelas
+                };
+
+                db.users.push(newUser);
+                saveDatabase();
+                
+                showNotification('Registrasi Berhasil', 'Akun Anda sedang menunggu persetujuan admin.', 'success');
+                showPage('auth-page');
+                registerUserForm.reset();
+            }
+
+            function handleRegisterAdmin(e) {
+                e.preventDefault();
+                const name = document.getElementById('register-admin-name').value;
+                const pass = document.getElementById('register-admin-password').value;
+
+                if (db.users.find(u => u.name === name)) {
+                    showNotification('Registrasi Gagal', 'Nama sudah digunakan.', 'danger');
+                    return;
+                }
+
+                const newAdmin = {
+                    id: `user-${Date.now()}`,
+                    name: name,
+                    password: pass,
+                    role: 'admin',
+                    status: 'pending', // Menunggu persetujuan Super Admin
+                    kelas: null
+                };
+
+                db.users.push(newAdmin);
+                saveDatabase();
+
+                showNotification('Registrasi Berhasil', 'Akun Anda sedang menunggu persetujuan Super Admin.', 'success');
+                showPage('auth-page');
+                registerAdminForm.reset();
+            }
+
+            function handleLogout() {
+                // Animasi Logout
+                appContainer.style.transition = 'opacity 0.5s';
+                appContainer.style.opacity = '0';
+                
+                setTimeout(() => {
+                    destroySession();
+                    showPage('auth-page');
+                    appContainer.style.opacity = '1';
+                }, 500);
+            }
+
+            // --- NAVIGASI APLIKASI ---
+            function showPage(pageId) {
+                const pages = document.querySelectorAll('.page');
+                let currentPage = document.querySelector('.page:not(.hidden)');
+                let nextPage = document.getElementById(pageId);
+
+                if (currentPage && nextPage && currentPage !== nextPage) {
+                    // Animasi transisi
+                    currentPage.classList.add('slide-out-to-left');
+                    nextPage.classList.remove('hidden');
+                    nextPage.classList.add('slide-in-from-right');
+
+                    setTimeout(() => {
+                        currentPage.classList.add('hidden');
+                        currentPage.classList.remove('slide-out-to-left');
+                        nextPage.classList.remove('slide-in-from-right');
+                    }, 500);
+                } else if (nextPage) {
+                    pages.forEach(p => p.classList.add('hidden'));
+                    nextPage.classList.remove('hidden');
+                }
+            }
+
+            function navigateToDashboard() {
+                showPage('dashboard-page');
+                renderDashboardNav();
+                navigateToDashboardPage('home'); // Tampilkan halaman home dulu
+            }
+
+            function handleNavClick(e) {
+                if (e.target.classList.contains('nav-item')) {
+                    const pageName = e.target.dataset.page;
+                    navigateToDashboardPage(pageName);
+
+                    // Sembunyikan nav di mobile setelah klik
+                    if (window.innerWidth <= 768) {
+                        dashboardNav.classList.remove('show');
+                    }
+                }
             }
             
-            let html = '<table class="system-table">';
-            html += '<thead><tr><th>Tugas</th><th>Mata Pelajaran</th><th>Deadline</th></tr></thead><tbody>';
-            userTasks.forEach(t => {
-                html += `<tr><td>${t.deskripsi}</td><td>${t.mapel}</td><td>${formatTanggal(t.deadline)}</td></tr>`;
-            });
-            html += '</tbody></table>';
-            tasksContent.innerHTML = html;
-        }
+            function navigateToDashboardPage(pageName) {
+                activePage = pageName;
+                
+                // Update status 'active' di nav
+                document.querySelectorAll('#dashboard-nav .nav-item').forEach(item => {
+                    item.classList.remove('active');
+                    if (item.dataset.page === pageName) {
+                        item.classList.add('active');
+                    }
+                });
 
-        function renderNotes() {
-            const notesList = document.getElementById('notes-list');
-            const userNotes = db.notes.filter(n => n.userId === currentUser.id);
-            
-            if(userNotes.length === 0) {
-                notesList.innerHTML = '<p>Anda belum memiliki catatan. Klik "+ Catatan Baru" untuk membuat.</p>';
-                return;
+                // [PERBAIKAN] Render konten ke area spesifik
+                const contentArea = dashboardContentArea; 
+
+                // Render konten halaman
+                switch (pageName) {
+                    case 'home':
+                        renderHome(contentArea);
+                        break;
+                    case 'schedule':
+                        renderSchedule(contentArea);
+                        break;
+                    case 'tasks':
+                        renderTasks(contentArea);
+                        break;
+                    case 'notes':
+                        renderNotes(contentArea);
+                        break;
+                    case 'notifications':
+                        renderNotifications(contentArea);
+                        break;
+                    case 'manage-schedule':
+                        renderManageSchedule(contentArea);
+                        break;
+                    case 'manage-tasks':
+                        renderManageTasks(contentArea);
+                        break;
+                    case 'manage-users':
+                        renderManageUsers(contentArea);
+                        break;
+                    case 'manage-admins':
+                        renderManageAdmins(contentArea);
+                        break;
+                    case 'view-all-notes':
+                        renderViewAllNotes(contentArea);
+                        break;
+                    case 'data-settings':
+                        renderDataSettings(contentArea);
+                        break;
+                }
             }
-            
-            let html = '';
-            userNotes.forEach(note => {
-                html += `
-                    <div class="system-card">
-                        <h3>${note.title}</h3>
-                        <p>${note.content.substring(0, 100)}...</p>
-                        <small>Dibuat: ${formatTanggal(note.id)}</small>
-                        <div class="action-buttons" style="margin-top: 1rem;">
-                            <button class="btn" onclick="openNoteModal('${note.id}')">Edit</button>
-                            <button class="btn btn-danger" onclick="deleteNote('${note.id}')">Hapus</button>
+
+            // --- RENDER FUNCTIONS ---
+            function renderHome(container) {
+                container.innerHTML = `
+                    <div id="welcome-message">
+                        <h1>Selamat Datang, ${sanitize(currentUser.name)}!</h1>
+                        <p>Anda login sebagai ${currentUser.role}. Gunakan navigasi di samping untuk mengakses fitur Penjadwalan Kelas.</p>
+                        ${currentUser.role === 'user' ? `<p>Kelas Anda: <strong>${currentUser.kelas}</strong></p>` : ''}
+                    </div>
+                `;
+            }
+
+            // Fungsi untuk render Navigasi berdasarkan role
+            function renderDashboardNav() {
+                const userGroup = document.getElementById('nav-user-group');
+                const adminGroup = document.getElementById('nav-admin-group');
+                const superAdminGroup = document.getElementById('nav-superadmin-group');
+
+                // Reset
+                userGroup.style.display = 'none';
+                adminGroup.style.display = 'none';
+                superAdminGroup.style.display = 'none';
+
+                if (currentUser.role === 'user') {
+                    userGroup.style.display = 'block';
+                    updateNotificationBadge();
+                } else if (currentUser.role === 'admin') {
+                    userGroup.style.display = 'block';
+                    adminGroup.style.display = 'block';
+                    updateNotificationBadge(); // Admin juga punya notif (sebagai user)
+                } else if (currentUser.role === 'superadmin') {
+                    userGroup.style.display = 'block';
+                    adminGroup.style.display = 'block';
+                    superAdminGroup.style.display = 'block';
+                    updateNotificationBadge(); // Superadmin juga punya notif (sebagai user)
+                }
+            }
+
+            // --- RENDER USER ---
+            function renderSchedule(container) {
+                const userKelas = currentUser.kelas;
+                const schedule = db.schedule.filter(s => s.kelas === userKelas);
+                
+                let content = `
+                    <div class="page-header">
+                        <h1>Jadwal Kelas (${userKelas})</h1>
+                    </div>
+                `;
+
+                if (schedule.length === 0) {
+                    content += '<p>Belum ada jadwal untuk kelas ini.</p>';
+                    container.innerHTML = content;
+                    return;
+                }
+
+                // Mengelompokkan berdasarkan hari
+                const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const scheduleByDay = {};
+                days.forEach(day => {
+                    scheduleByDay[day] = schedule
+                        .filter(s => s.hari === day)
+                        .sort((a, b) => a.jam.localeCompare(b.jam)); // Urutkan berdasarkan jam
+                });
+
+                content += '<div class="grid-container">';
+
+                days.forEach(day => {
+                    if (scheduleByDay[day].length > 0) {
+                        content += `
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>${day}</h3>
+                                </div>
+                                <ul style="list-style: none; padding-left: 0;">
+                                    ${scheduleByDay[day].map(s => `
+                                        <li style="padding: 0.5rem 0; border-bottom: 1px dashed var(--color-text-dark);">
+                                            <strong>${s.jam}</strong> - ${sanitize(s.mapel)}<br>
+                                            <small>${sanitize(s.guru)}</small>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    }
+                });
+
+                content += '</div>';
+                container.innerHTML = content;
+            }
+
+            function renderTasks(container) {
+                const userKelas = currentUser.kelas;
+                const tasks = db.tasks.filter(t => t.kelas === userKelas);
+
+                let content = `
+                    <div class="page-header">
+                        <h1>Tugas (${userKelas})</h1>
+                    </div>
+                `;
+
+                if (tasks.length === 0) {
+                    content += '<p>Tidak ada tugas untuk kelas ini.</p>';
+                    container.innerHTML = content;
+                    return;
+                }
+
+                content += '<div class="grid-container">';
+                tasks.sort((a,b) => new Date(a.deadline) - new Date(b.deadline)); // Urutkan
+
+                tasks.forEach(task => {
+                    content += `
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>${sanitize(task.mapel)}</h3>
+                                <small>Deadline: ${formatTanggal(task.deadline, true)}</small>
+                            </div>
+                            <p>${sanitize(task.deskripsi)}</p>
+                        </div>
+                    `;
+                });
+
+                content += '</div>';
+                container.innerHTML = content;
+            }
+
+            function renderNotes(container) {
+                const notes = db.notes.filter(n => n.userId === currentUser.id);
+
+                let content = `
+                    <div class="page-header">
+                        <h1>Catatan Pribadi</h1>
+                        <button class="btn" onclick="showNoteForm()">Tambah Catatan</button>
+                    </div>
+                `;
+
+                if (notes.length === 0) {
+                    content += '<p>Anda belum memiliki catatan.</p>';
+                } else {
+                    content += '<div class="grid-container">';
+                    notes.forEach(note => {
+                        // [FIX] Menggunakan timestamp jika ada, jika tidak, parse dari ID
+                        const timestamp = note.timestamp ? note.timestamp : parseInt(note.id.split('-')[1]);
+                        content += `
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>${sanitize(note.title)}</h3>
+                                    <small>
+                                        ${formatTanggal(timestamp)}
+                                    </small>
+                                </div>
+                                <p>${sanitize(note.content)}</p>
+                                <div class="card-actions" style="margin-top: 1rem; justify-content: flex-end;">
+                                    <button class="btn-icon" onclick="showNoteForm('${note.id}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V12h2.293l6.5-6.5zM1 13.293l-1 1 1-1z"/></svg>
+                                    </button>
+                                    <button class="btn-icon" style="color: var(--color-danger);" onclick="deleteNote('${note.id}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    content += '</div>';
+                }
+                container.innerHTML = content;
+            }
+
+            function renderNotifications(container) {
+                const userNotifs = db.notifications[currentUser.id] || [];
+                
+                let content = `
+                    <div class="page-header">
+                        <h1>Notifikasi</h1>
+                        ${userNotifs.length > 0 ? '<button class="btn btn-danger" onclick="deleteAllNotifications()">Hapus Semua</button>' : ''}
+                    </div>
+                `;
+
+                if (userNotifs.length === 0) {
+                    content += '<p>Tidak ada notifikasi.</p>';
+                } else {
+                    content += '<div class="notification-list">';
+                    // Urutkan dari terbaru
+                    userNotifs.sort((a, b) => b.timestamp - a.timestamp);
+                    
+                    userNotifs.forEach(n => {
+                        content += `
+                            <div class="notification-item" id="${n.id}">
+                                <div class="notification-content">
+                                    <strong>[${n.type.toUpperCase()}] ${sanitize(n.title)}</strong>
+                                    <p>${sanitize(n.message)}</p>
+                                    <!-- [FIX] Menggunakan n.timestamp yang sudah pasti ada -->
+                                    <small>${formatTanggal(n.timestamp)}</small>
+                                </div>
+                                <button class="btn-icon" data-id="${n.id}" onclick="deleteNotification(event)">&times;</button>
+                            </div>
+                        `;
+                    });
+                    content += '</div>';
+                }
+                container.innerHTML = content;
+                
+                // Tandai semua sebagai sudah dibaca
+                if (db.notifications[currentUser.id]) {
+                    db.notifications[currentUser.id].forEach(n => n.read = true);
+                }
+                saveDatabase();
+                updateNotificationBadge();
+            }
+
+            // --- RENDER ADMIN ---
+            function renderManageSchedule(container) {
+                let content = `
+                    <div class="page-header">
+                        <h1>Kelola Jadwal</h1>
+                        <button class="btn" onclick="showScheduleForm()">Tambah Jadwal</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-class-filter">Filter Kelas:</label>
+                        <select id="schedule-class-filter" class="form-control" onchange="renderManageScheduleTable()">
+                            <option value="">Semua Kelas</option>
+                            ${KELAS_LIST.map(k => `<option value="${k}">${k}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="table-container" id="schedule-table-container">
+                        <!-- Tabel jadwal akan dirender di sini oleh JS -->
+                    </div>
+                `;
+                container.innerHTML = content;
+                renderManageScheduleTable(); // Panggil fungsi untuk render tabel
+            }
+
+            function renderManageScheduleTable() {
+                const filterKelas = document.getElementById('schedule-class-filter').value;
+                const container = document.getElementById('schedule-table-container');
+
+                let scheduleData = db.schedule;
+                if (filterKelas) {
+                    scheduleData = db.schedule.filter(s => s.kelas === filterKelas);
+                }
+
+                if (scheduleData.length === 0) {
+                    container.innerHTML = '<p style="padding: 1rem;">Tidak ada jadwal untuk ditampilkan.</p>';
+                    return;
+                }
+
+                let tableHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kelas</th>
+                                <th>Hari</th>
+                                <th>Jam</th>
+                                <th>Mata Pelajaran</th>
+                                <th>Guru</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${scheduleData.map(s => `
+                                <tr>
+                                    <td>${s.kelas}</td>
+                                    <td>${s.hari}</td>
+                                    <td>${s.jam}</td>
+                                    <td>${sanitize(s.mapel)}</td>
+                                    <td>${sanitize(s.guru)}</td>
+                                    <td>
+                                        <button class="btn btn-secondary" onclick="showScheduleForm('${s.id}')">Edit</button>
+                                        <button class="btn btn-danger" onclick="deleteSchedule('${s.id}')">Hapus</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                container.innerHTML = tableHTML;
+            }
+
+            function renderManageTasks(container) {
+                let content = `
+                    <div class="page-header">
+                        <h1>Kelola Tugas</h1>
+                        <button class="btn" onclick="showTaskForm()">Tambah Tugas</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Kelas</th>
+                                    <th>Mata Pelajaran</th>
+                                    <th>Deadline</th>
+                                    <th>Deskripsi</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${db.tasks.map(t => `
+                                    <tr>
+                                        <td>${t.kelas}</td>
+                                        <td>${sanitize(t.mapel)}</td>
+                                        <td>${formatTanggal(t.deadline, true)}</td>
+                                        <td>${sanitize(t.deskripsi.substring(0, 50))}...</td>
+                                        <td>
+                                            <button class="btn btn-secondary" onclick="showTaskForm('${t.id}')">Edit</button>
+                                            <button class="btn btn-danger" onclick="deleteTask('${t.id}')">Hapus</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                if (db.tasks.length === 0) {
+                     content += '<p style="margin-top: 1rem;">Belum ada tugas yang ditambahkan.</p>';
+                }
+                container.innerHTML = content;
+            }
+
+            function renderManageUsers(container) {
+                const users = db.users.filter(u => u.role === 'user');
+                let content = `
+                    <div class="page-header">
+                        <h1>Kelola User</h1>
+                        <div class="header-actions">
+                            <button class="btn" onclick="showUserForm()">Tambah User</button>
+                            <input type="file" id="import-user-excel" accept=".xlsx, .xls, .csv" style="display: none;">
+                            <button class="btn btn-secondary" onclick="document.getElementById('import-user-excel').click()">Import Excel</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Kelas</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${users.map(u => `
+                                    <tr>
+                                        <td>${sanitize(u.name)}</td>
+                                        <td>${u.kelas}</td>
+                                        <td><span class="status-${u.status}">${u.status}</span></td>
+                                        <td>
+                                            ${u.status === 'pending' ? `
+                                                <button class="btn btn-success" onclick="approveUser('${u.id}')">Setujui</button>
+                                                <button class="btn btn-danger" onclick="rejectUser('${u.id}')">Tolak</button>
+                                            ` : ''}
+                                            <button class="btn btn-secondary" onclick="showUserForm('${u.id}')">Edit</button>
+                                            <button class="btn btn-danger" onclick="deleteUser('${u.id}')">Hapus</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                container.innerHTML = content;
+
+                // Event listener untuk import excel
+                document.getElementById('import-user-excel').addEventListener('change', (e) => handleImportExcel(e, 'user'));
+            }
+
+            // --- RENDER SUPER ADMIN ---
+            function renderManageAdmins(container) {
+                const admins = db.users.filter(u => u.role === 'admin');
+                let content = `
+                    <div class="page-header">
+                        <h1>Kelola Admin</h1>
+                        <div class="header-actions">
+                            <!-- Super Admin tidak bisa tambah manual, hanya approve -->
+                            <input type="file" id="import-admin-excel" accept=".xlsx, .xls, .csv" style="display: none;">
+                            <button class="btn btn-secondary" onclick="document.getElementById('import-admin-excel').click()">Import Excel</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${admins.map(u => `
+                                    <tr>
+                                        <td>${sanitize(u.name)}</td>
+                                        <td><span class="status-${u.status}">${u.status}</span></td>
+                                        <td>
+                                            ${u.status === 'pending' ? `
+                                                <button class="btn btn-success" onclick="approveUser('${u.id}')">Setujui</button>
+                                                <button class="btn btn-danger" onclick="rejectUser('${u.id}')">Tolak</button>
+                                            ` : ''}
+                                            <button class="btn btn-danger" onclick="deleteUser('${u.id}')">Hapus</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                container.innerHTML = content;
+                
+                // Event listener untuk import excel
+                document.getElementById('import-admin-excel').addEventListener('change', (e) => handleImportExcel(e, 'admin'));
+            }
+
+            function renderViewAllNotes(container) {
+                let content = `
+                    <div class="page-header">
+                        <h1>Semua Catatan User</h1>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-note-filter">Filter User:</label>
+                        <select id="user-note-filter" class="form-control" onchange="renderViewAllNotesTable()">
+                            <option value="">Semua User</option>
+                            ${db.users.filter(u => u.role === 'user').map(u => `<option value="${u.id}">${sanitize(u.name)} (${u.kelas})</option>`).join('')}
+                        </select>
+                    </div>
+                    <div id="all-notes-container">
+                        <!-- Catatan akan dirender di sini -->
+                    </div>
+                `;
+                container.innerHTML = content;
+                renderViewAllNotesTable();
+            }
+
+            function renderViewAllNotesTable() {
+                const filterUserId = document.getElementById('user-note-filter').value;
+                const container = document.getElementById('all-notes-container');
+
+                let notes = db.notes;
+                if (filterUserId) {
+                    notes = db.notes.filter(n => n.userId === filterUserId);
+                }
+
+                if (notes.length === 0) {
+                    container.innerHTML = '<p>Tidak ada catatan untuk ditampilkan.</p>';
+                    return;
+                }
+
+                let content = '<div class="grid-container">';
+                notes.forEach(note => {
+                    const user = db.users.find(u => u.id === note.userId);
+                    // [FIX] Menggunakan timestamp jika ada, jika tidak, parse dari ID
+                    const timestamp = note.timestamp ? note.timestamp : parseInt(note.id.split('-')[1]);
+                    content += `
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>${sanitize(note.title)}</h3>
+                                <small>
+                                    ${formatTanggal(timestamp)}
+                                </small>
+                            </div>
+                            <p>${sanitize(note.content)}</p>
+                            <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-dark); border-top: 1px dashed var(--color-text-dark); padding-top: 0.5rem;">
+                                Dibuat oleh: <strong>${user ? sanitize(user.name) : 'User Dihapus'}</strong>
+                            </p>
+                        </div>
+                    `;
+                });
+                content += '</div>';
+                container.innerHTML = content;
+            }
+
+            function renderDataSettings(container) {
+                let content = `
+                    <div class="page-header">
+                        <h1>Pengaturan Data</h1>
+                    </div>
+                    <div class="grid-container">
+                        <!-- Hapus Data Individual -->
+                        <div class="card">
+                            <div class="card-header"><h3>Hapus Data Individual</h3></div>
+                            <p>Hapus data spesifik (jadwal, tugas, user) berdasarkan ID. (Dilakukan di halaman Kelola masing-masing)</p>
+                        </div>
+
+                        <!-- Hapus Data per Kelas -->
+                        <div class="card">
+                            <div class="card-header"><h3>Hapus Data per Kelas</h3></div>
+                            <div class="form-group">
+                                <label for="delete-by-class-select">Pilih Kelas</label>
+                                <select id="delete-by-class-select" class="form-control">
+                                    <option value="">Pilih Kelas</option>
+                                    ${KELAS_LIST.map(k => `<option value="${k}">${k}</option>`).join('')}
+                                </select>
+                            </div>
+                            <button class="btn btn-danger" onclick="deleteDataByClass()">Hapus Data Kelas Ini</button>
+                        </div>
+
+                        <!-- Hapus Data per Angkatan -->
+                        <div class="card">
+                            <div class="card-header"><h3>Hapus Data per Angkatan</h3></div>
+                            <div class="form-group">
+                                <label for="delete-by-grade-select">Pilih Angkatan</label>
+                                <select id="delete-by-grade-select" class="form-control">
+                                    <option value="">Pilih Angkatan</option>
+                                    <option value="X">Kelas X</option>
+                                    <option value="XI">Kelas XI</option>
+                                    <option value="XII">Kelas XII</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-danger" onclick="deleteDataByGrade()">Hapus Data Angkatan Ini</button>
+                        </div>
+                        
+                        <!-- Factory Reset -->
+                        <div class="card">
+                            <div class="card-header"><h3>Factory Reset</h3></div>
+                            <p>HATI-HATI! Ini akan menghapus semua data (user, jadwal, tugas, catatan) dan mengembalikan aplikasi ke pengaturan awal.</p>
+                            <br>
+                            <button class="btn btn-danger" onclick="factoryReset()">Factory Reset Aplikasi</button>
                         </div>
                     </div>
                 `;
-            });
-            notesList.innerHTML = html;
-        }
-
-        function renderNotifications() {
-            const notificationsList = document.getElementById('notifications-list');
-            // Ambil notifikasi untuk user ini, urutkan dari terbaru
-            const userNotifications = db.notifications
-                .filter(n => (n.targetRole === currentUser.role || n.targetUserId === currentUser.id) && (n.targetKelas === currentUser.kelas || !n.targetKelas))
-                .sort((a, b) => b.id - a.id);
-            
-            if(userNotifications.length === 0) {
-                notificationsList.innerHTML = '<p>Tidak ada riwayat notifikasi.</p>';
-                return;
+                container.innerHTML = content;
             }
 
-            let html = '';
-            userNotifications.forEach(n => {
-                // Tandai sebagai sudah dibaca
-                if (!n.readBy.includes(currentUser.id)) {
-                    n.readBy.push(currentUser.id);
+            // --- DATA FUNCTIONS ---
+            function saveNote() {
+                const titleInput = document.getElementById('note-title');
+                const contentInput = document.getElementById('note-content');
+                const noteId = modalContent.dataset.noteId;
+
+                if (!titleInput.value) {
+                    showNotification('Gagal', 'Judul tidak boleh kosong.', 'danger');
+                    return;
+                }
+
+                if (noteId) {
+                    // Edit catatan
+                    const note = db.notes.find(n => n.id === noteId);
+                    note.title = sanitize(titleInput.value);
+                    note.content = sanitize(contentInput.value);
+                } else {
+                    // Tambah catatan baru
+                    const newNote = {
+                        id: `note-${Date.now()}`,
+                        userId: currentUser.id,
+                        title: sanitize(titleInput.value),
+                        content: sanitize(contentInput.value),
+                        timestamp: Date.now() // [FIX] Add timestamp on creation
+                    };
+                    db.notes.push(newNote);
                 }
                 
-                html += `
-                    <div class="notification-item">
-                        <div>
-                            <p>${n.message}</p>
-                            <small>${formatTanggal(n.id)}</small>
-                        </div>
-                        <button class="btn btn-danger" style="padding: 0.25rem;" onclick="deleteNotification('${n.id}')">&times;</button>
-                    </div>
-                `;
-            });
-            saveDatabase(); // Simpan status "read"
-            notificationsList.innerHTML = html;
-        }
-
-        function renderApproval() {
-            const approvalList = document.getElementById('approval-list');
-            let pendingUsers;
-            
-            if(currentUser.role === 'superadmin') {
-                // Super Admin melihat semua user dan admin yang pending
-                pendingUsers = db.users.filter(u => !u.approved && (u.role === 'user' || u.role === 'admin'));
-            } else if (currentUser.role === 'admin') {
-                // Admin hanya melihat user yang pending
-                pendingUsers = db.users.filter(u => !u.approved && u.role === 'user');
-            }
-
-            if(pendingUsers.length === 0) {
-                approvalList.innerHTML = '<p>Tidak ada akun yang menunggu persetujuan.</p>';
-                return;
-            }
-            
-            let html = '<table class="system-table">';
-            html += '<thead><tr><th>Nama</th><th>Role</th><th>Kelas</th><th>Aksi</th></tr></thead><tbody>';
-            pendingUsers.forEach(u => {
-                html += `
-                    <tr>
-                        <td>${u.name}</td>
-                        <td>${u.role}</td>
-                        <td>${u.kelas || '-'}</td>
-                        <td class="action-buttons">
-                            <button class="btn" style="border-color: var(--color-success); color: var(--color-success);" onclick="approveUser('${u.id}')">Setuju</button>
-                            <button class="btn btn-danger" onclick="denyUser('${u.id}')">Tolak</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            html += '</tbody></table>';
-            approvalList.innerHTML = html;
-        }
-
-        function renderManageSchedule(filterKelas = 'all') {
-            document.getElementById('schedule-filter-class').value = filterKelas;
-            const tableBody = document.getElementById('manage-schedule-table');
-            
-            let schedules = (filterKelas === 'all')
-                ? db.schedules
-                : db.schedules.filter(s => s.kelas === filterKelas);
-                
-            schedules = schedules.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.hari - b.hari || a.jam.localeCompare(b.jam));
-            
-            if(schedules.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5">Tidak ada jadwal.</td></tr>';
-                return;
-            }
-            
-            const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-            let html = '';
-            schedules.forEach(s => {
-                html += `
-                    <tr>
-                        <td>${days[s.hari]}</td>
-                        <td>${s.jam}</td>
-                        <td>${s.mapel}</td>
-                        <td>${s.kelas}</td>
-                        <td class="action-buttons">
-                            <button class="btn" onclick="openScheduleModal('${s.id}')">Edit</button>
-                            <button class="btn btn-danger" onclick="deleteSchedule('${s.id}')">Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            tableBody.innerHTML = html;
-        }
-        
-        function renderManageTasks(filterKelas = 'all') {
-            document.getElementById('task-filter-class').value = filterKelas;
-            const tableBody = document.getElementById('manage-tasks-table');
-            
-            let tasks = (filterKelas === 'all')
-                ? db.tasks
-                : db.tasks.filter(t => t.kelas === filterKelas);
-                
-            tasks = tasks.sort((a, b) => a.deadline - b.deadline);
-            
-            if(tasks.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5">Tidak ada tugas.</td></tr>';
-                return;
-            }
-
-            let html = '';
-            tasks.forEach(t => {
-                html += `
-                    <tr>
-                        <td>${t.deskripsi}</td>
-                        <td>${t.mapel}</td>
-                        <td>${formatTanggal(t.deadline)}</td>
-                        <td>${t.kelas}</td>
-                        <td class="action-buttons">
-                            <button class="btn" onclick="openTaskModal('${t.id}')">Edit</button>
-                            <button class="btn btn-danger" onclick="deleteTask('${t.id}')">Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            tableBody.innerHTML = html;
-        }
-        
-        function renderManageUsers() {
-            const tableBody = document.getElementById('manage-users-table');
-            // Admin hanya bisa melihat user
-            const users = (currentUser.role === 'superadmin')
-                ? db.users.filter(u => u.role === 'user')
-                : db.users.filter(u => u.role === 'user');
-            
-            if(users.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5">Tidak ada user terdaftar.</td></tr>';
-                return;
-            }
-            
-            let html = '';
-            users.forEach(u => {
-                html += `
-                    <tr>
-                        <td>${u.name}</td>
-                        <td>${u.role}</td>
-                        <td>${u.kelas || '-'}</td>
-                        <td>${u.approved ? '<span style="color: var(--color-success)">Disetujui</span>' : '<span style="color: var(--color-danger)">Pending</span>'}</td>
-                        <td class="action-buttons">
-                            ${!u.approved ? `<button class="btn" style="border-color: var(--color-success); color: var(--color-success);" onclick="approveUser('${u.id}', 'manage-users')">Setuju</button>` : ''}
-                            <button class="btn btn-danger" onclick="deleteUser('${u.id}', 'manage-users')">Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            tableBody.innerHTML = html;
-        }
-        
-        function renderManageAdmins() {
-            // Hanya Super Admin
-            const tableBody = document.getElementById('manage-admins-table');
-            const admins = db.users.filter(u => u.role === 'admin' || u.role === 'superadmin');
-
-            let html = '';
-            admins.forEach(u => {
-                // Super Admin tidak bisa menghapus dirinya sendiri
-                const disableDelete = (u.id === currentUser.id);
-                
-                html += `
-                    <tr>
-                        <td>${u.name} ${u.role === 'superadmin' ? '(Super)' : ''}</td>
-                        <td>${u.role}</td>
-                        <td>${u.approved ? '<span style="color: var(--color-success)">Disetujui</span>' : '<span style="color: var(--color-danger)">Pending</span>'}</td>
-                        <td class="action-buttons">
-                            ${!u.approved ? `<button class="btn" style="border-color: var(--color-success); color: var(--color-success);" onclick="approveUser('${u.id}', 'manage-admins')">Setuju</button>` : ''}
-                            <button class="btn btn-danger" onclick="deleteUser('${u.id}', 'manage-admins')" ${disableDelete ? 'disabled' : ''}>Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            tableBody.innerHTML = html;
-        }
-        
-        function renderViewAllNotes(filterUser = 'all') {
-            const notesList = document.getElementById('all-notes-list');
-            const userSelect = document.getElementById('notes-filter-user');
-            
-            // Isi filter user
-            if(userSelect.options.length <= 1) {
-                db.users.filter(u => u.role === 'user').forEach(u => {
-                    const option = document.createElement('option');
-                    option.value = u.id;
-                    option.textContent = u.name;
-                    userSelect.appendChild(option);
-                });
-            }
-            userSelect.value = filterUser;
-
-            let notes;
-            if (filterUser === 'all') {
-                notesList.innerHTML = '<p>Pilih user dari daftar untuk melihat catatan.</p>';
-                return;
-            } else {
-                notes = db.notes.filter(n => n.userId === filterUser);
-            }
-            
-            if(notes.length === 0) {
-                notesList.innerHTML = '<p>User ini tidak memiliki catatan.</p>';
-                return;
-            }
-            
-            let html = '';
-            notes.forEach(note => {
-                html += `
-                    <div class="system-card" style="border-color: var(--color-secondary);">
-                        <h3>${note.title}</h3>
-                        <p>${note.content}</p>
-                        <small>Dibuat: ${formatTanggal(note.id)}</small>
-                    </div>
-                `;
-            });
-            notesList.innerHTML = html;
-        }
-
-        
-        // --- Aksi CRUD dan Manajemen ---
-
-        function approveUser(userId, returnPage = 'approval') {
-            const user = db.users.find(u => u.id === userId);
-            if(user) {
-                user.approved = true;
                 saveDatabase();
-                
-                // Buat notifikasi untuk user yang disetujui
-                createNotification(
-                    `Akun Anda (Role: ${user.role}) telah disetujui. Selamat datang!`,
-                    user.role, // Target role
-                    user.kelas, // Target kelas
-                    user.id // Target user spesifik
-                );
-                
-                // Render ulang halaman
-                if (returnPage === 'approval') renderApproval();
-                if (returnPage === 'manage-users') renderManageUsers();
-                if (returnPage === 'manage-admins') renderManageAdmins();
+                closeModal();
+                renderNotes(dashboardContentArea); // [FIX] Render ke area yang benar
+                showNotification('Berhasil', 'Catatan berhasil disimpan.', 'success');
             }
-        }
 
-        function denyUser(userId, returnPage = 'approval') {
-            if(confirm('Anda yakin ingin menolak dan menghapus akun ini?')) {
-                db.users = db.users.filter(u => u.id !== userId);
-                saveDatabase();
-                // Render ulang halaman
-                if (returnPage === 'approval') renderApproval();
-                if (returnPage === 'manage-users') renderManageUsers();
-                if (returnPage === 'manage-admins') renderManageAdmins();
+            // [PERBAIKAN] Mengganti confirm() dengan modal
+            function deleteNote(noteId) {
+                const message = 'Apakah Anda yakin ingin menghapus catatan ini?';
+                const onConfirm = `executeDeleteNote('${noteId}')`;
+                showConfirmationModal('Konfirmasi Hapus', message, onConfirm);
             }
-        }
-        
-        function deleteUser(userId, returnPage) {
-            if (userId === currentUser.id) {
-                alert('Tidak dapat menghapus diri sendiri.');
-                return;
-            }
-            if(confirm('Anda yakin ingin menghapus user ini secara permanen?')) {
-                db.users = db.users.filter(u => u.id !== userId);
-                // Hapus juga data terkait (catatan, notifikasi)
-                db.notes = db.notes.filter(n => n.userId !== userId);
-                db.notifications.forEach(n => {
-                    n.readBy = n.readBy.filter(id => id !== userId);
-                });
-                
-                saveDatabase();
-                
-                if (returnPage === 'manage-users') renderManageUsers();
-                if (returnPage === 'manage-admins') renderManageAdmins();
-            }
-        }
 
-        // CRUD Catatan (User)
-        function openNoteModal(noteId = null) {
-            const modalTitle = document.getElementById('modal-title');
-            const modalBody = document.getElementById('modal-body');
-            
-            let note = { id: null, title: '', content: '' };
-            if(noteId) {
-                note = db.notes.find(n => n.id === noteId && n.userId === currentUser.id);
-            }
-            
-            modalTitle.textContent = noteId ? 'Edit Catatan' : 'Catatan Baru';
-            modalBody.innerHTML = `
-                <form id="note-form">
-                    <input type="hidden" id="note-id" value="${note.id || ''}">
-                    <div class="form-group">
-                        <label for="note-title">Judul</label>
-                        <input type="text" id="note-title" class="form-control" value="${note.title}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="note-content">Isi Catatan</label>
-                        <textarea id="note-content" class="form-control" rows="8" required>${note.content}</textarea>
-                    </div>
-                    <button type="submit" class="btn btn-full">Simpan</button>
-                </form>
-            `;
-            
-            document.getElementById('note-form').addEventListener('submit', saveNote);
-            showModal();
-        }
-
-        function saveNote(e) {
-            e.preventDefault();
-            const id = document.getElementById('note-id').value;
-            const title = document.getElementById('note-title').value;
-            const content = document.getElementById('note-content').value;
-            
-            if(id) {
-                // Edit
-                const note = db.notes.find(n => n.id === id);
-                note.title = title;
-                note.content = content;
-            } else {
-                // Baru
-                db.notes.push({
-                    id: 'n-' + Date.now(),
-                    userId: currentUser.id,
-                    title: title,
-                    content: content
-                });
-            }
-            
-            saveDatabase();
-            hideModal();
-            renderNotes();
-        }
-
-        function deleteNote(noteId) {
-            if(confirm('Anda yakin ingin menghapus catatan ini?')) {
+            function executeDeleteNote(noteId) {
                 db.notes = db.notes.filter(n => n.id !== noteId);
                 saveDatabase();
-                renderNotes();
+                renderNotes(dashboardContentArea);
+                closeModal();
+                showNotification('Berhasil', 'Catatan dihapus.', 'success');
             }
-        }
 
-        // CRUD Jadwal (Admin)
-        function openScheduleModal(scheduleId = null) {
-            const modalTitle = document.getElementById('modal-title');
-            const modalBody = document.getElementById('modal-body');
-            
-            let schedule = { id: null, hari: '0', jam: '', mapel: '', kelas: KELAS_LIST[0] };
-            if(scheduleId) {
-                schedule = db.schedules.find(s => s.id === scheduleId);
-            }
-            
-            const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-            let dayOptions = '';
-            days.forEach((day, index) => {
-                dayOptions += `<option value="${index}" ${schedule.hari == index ? 'selected' : ''}>${day}</option>`;
-            });
-            
-            let classOptions = '';
-            KELAS_LIST.forEach(kelas => {
-                classOptions += `<option value="${kelas}" ${schedule.kelas === kelas ? 'selected' : ''}>${kelas}</option>`;
-            });
-
-            modalTitle.textContent = scheduleId ? 'Edit Jadwal' : 'Tambah Jadwal';
-            modalBody.innerHTML = `
-                <form id="schedule-form">
-                    <input type="hidden" id="schedule-id" value="${schedule.id || ''}">
-                    <div class="form-group">
-                        <label for="schedule-kelas">Kelas</label>
-                        <select id="schedule-kelas" class="form-control" required>${classOptions}</select>
-                    </div>
-                    <div class="form-group">
-                        <label for="schedule-hari">Hari</label>
-                        <select id="schedule-hari" class="form-control" required>${dayOptions}</select>
-                    </div>
-                    <div class="form-group">
-                        <label for="schedule-jam">Jam (cth: 07:00 - 08:30)</label>
-                        <input type="text" id="schedule-jam" class="form-control" value="${schedule.jam}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="schedule-mapel">Mata Pelajaran</label>
-                        <input type="text" id="schedule-mapel" class="form-control" value="${schedule.mapel}" required>
-                    </div>
-                    <button type="submit" class="btn btn-full">Simpan</button>
-                </form>
-            `;
-            
-            document.getElementById('schedule-form').addEventListener('submit', saveSchedule);
-            showModal();
-        }
-
-        function saveSchedule(e) {
-            e.preventDefault();
-            const id = document.getElementById('schedule-id').value;
-            const kelas = document.getElementById('schedule-kelas').value;
-            const hari = document.getElementById('schedule-hari').value;
-            const jam = document.getElementById('schedule-jam').value;
-            const mapel = document.getElementById('schedule-mapel').value;
-            
-            let message = '';
-            
-            if(id) {
-                // Edit
-                const schedule = db.schedules.find(s => s.id === id);
-                schedule.kelas = kelas;
-                schedule.hari = hari;
-                schedule.jam = jam;
-                schedule.mapel = mapel;
-                message = `Jadwal ${mapel} di kelas ${kelas} telah diubah.`;
-            } else {
-                // Baru
-                db.schedules.push({
-                    id: 's-' + Date.now(),
-                    kelas: kelas,
-                    hari: hari,
-                    jam: jam,
-                    mapel: mapel
-                });
-                message = `Jadwal baru ditambahkan untuk kelas ${kelas}: ${mapel} (${jam}).`;
-            }
-            
-            saveDatabase();
-            
-            // Buat notifikasi untuk user di kelas tersebut
-            createNotification(message, 'user', kelas);
-            
-            hideModal();
-            renderManageSchedule(kelas); // Render ulang dengan filter kelas yg baru diedit
-        }
-
-        function deleteSchedule(scheduleId) {
-            if(confirm('Anda yakin ingin menghapus jadwal ini?')) {
-                const schedule = db.schedules.find(s => s.id === scheduleId);
-                const filterKelas = schedule.kelas;
+            function deleteNotification(e) {
+                const notifId = e.currentTarget.dataset.id;
+                if (!db.notifications[currentUser.id]) return;
                 
-                db.schedules = db.schedules.filter(s => s.id !== scheduleId);
+                db.notifications[currentUser.id] = db.notifications[currentUser.id].filter(n => n.id !== notifId);
                 saveDatabase();
                 
-                // Buat notifikasi
-                createNotification(`Jadwal ${schedule.mapel} (${schedule.jam}) untuk kelas ${schedule.kelas} telah dihapus.`, 'user', schedule.kelas);
+                // Hapus elemen dari DOM tanpa render ulang
+                const item = document.getElementById(notifId);
+                if (item) item.remove();
                 
-                renderManageSchedule(filterKelas);
+                showNotification('Berhasil', 'Notifikasi dihapus.', 'success');
+                updateNotificationBadge();
             }
-        }
-        
-        // CRUD Tugas (Admin)
-        function openTaskModal(taskId = null) {
-            const modalTitle = document.getElementById('modal-title');
-            const modalBody = document.getElementById('modal-body');
-            
-            let task = { id: null, deskripsi: '', mapel: '', deadline: '', kelas: KELAS_LIST[0] };
-            if(taskId) {
-                task = db.tasks.find(t => t.id === taskId);
+
+            // [PERBAIKAN] Mengganti confirm() dengan modal
+            function deleteAllNotifications() {
+                const message = 'Apakah Anda yakin ingin menghapus semua notifikasi?';
+                const onConfirm = 'executeDeleteAllNotifications()';
+                showConfirmationModal('Konfirmasi Hapus Semua', message, onConfirm);
             }
-            
-            // Konversi timestamp ke format input datetime-local
-            const deadlineValue = task.deadline ? new Date(task.deadline).toISOString().substring(0, 16) : '';
-            
-            let classOptions = '';
-            KELAS_LIST.forEach(kelas => {
-                classOptions += `<option value="${kelas}" ${task.kelas === kelas ? 'selected' : ''}>${kelas}</option>`;
-            });
 
-            modalTitle.textContent = taskId ? 'Edit Tugas' : 'Tambah Tugas';
-            modalBody.innerHTML = `
-                <form id="task-form">
-                    <input type="hidden" id="task-id" value="${task.id || ''}">
-                    <div class="form-group">
-                        <label for="task-kelas">Kelas</label>
-                        <select id="task-kelas" class="form-control" required>${classOptions}</select>
-                    </div>
-                    <div class="form-group">
-                        <label for="task-mapel">Mata Pelajaran</label>
-                        <input type="text" id="task-mapel" class="form-control" value="${task.mapel}" required>
-                    </div>
-                     <div class="form-group">
-                        <label for="task-deskripsi">Deskripsi Tugas</label>
-                        <textarea id="task-deskripsi" class="form-control" rows="4" required>${task.deskripsi}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="task-deadline">Deadline</label>
-                        <input type="datetime-local" id="task-deadline" class="form-control" value="${deadlineValue}" required>
-                    </div>
-                    <button type="submit" class="btn btn-full">Simpan</button>
-                </form>
-            `;
-            
-            document.getElementById('task-form').addEventListener('submit', saveTask);
-            showModal();
-        }
+            function executeDeleteAllNotifications() {
+                db.notifications[currentUser.id] = [];
+                saveDatabase();
+                renderNotifications(dashboardContentArea);
+                closeModal();
+                showNotification('Berhasil', 'Semua notifikasi dihapus.', 'success');
+            }
 
-        function saveTask(e) {
-            e.preventDefault();
-            const id = document.getElementById('task-id').value;
-            const kelas = document.getElementById('task-kelas').value;
-            const mapel = document.getElementById('task-mapel').value;
-            const deskripsi = document.getElementById('task-deskripsi').value;
-            const deadline = new Date(document.getElementById('task-deadline').value).getTime(); // Simpan sebagai timestamp
-            
-            let message = '';
-            
-            if(id) {
-                // Edit
-                const task = db.tasks.find(t => t.id === id);
-                task.kelas = kelas;
-                task.mapel = mapel;
-                task.deskripsi = deskripsi;
-                task.deadline = deadline;
-                message = `Tugas ${mapel} di kelas ${kelas} telah diubah.`;
-            } else {
-                // Baru
-                db.tasks.push({
-                    id: 't-' + Date.now(),
-                    kelas: kelas,
-                    mapel: mapel,
-                    deskripsi: deskripsi,
-                    deadline: deadline
-                });
-                message = `Tugas baru ditambahkan untuk kelas ${kelas}: ${mapel} (${deskripsi}).`;
+            function saveSchedule() {
+                const kelas = document.getElementById('schedule-form-kelas').value;
+                const hari = document.getElementById('schedule-form-hari').value;
+                const jam = document.getElementById('schedule-form-jam').value;
+                const mapel = document.getElementById('schedule-form-mapel').value;
+                const guru = document.getElementById('schedule-form-guru').value;
+                const scheduleId = modalContent.dataset.scheduleId;
+
+                if (!kelas || !hari || !jam || !mapel) {
+                    showNotification('Gagal', 'Kelas, Hari, Jam, dan Mapel wajib diisi.', 'danger');
+                    return;
+                }
+
+                if (scheduleId) {
+                    // Edit
+                    const schedule = db.schedule.find(s => s.id === scheduleId);
+                    schedule.kelas = kelas;
+                    schedule.hari = hari;
+                    schedule.jam = jam;
+                    schedule.mapel = mapel;
+                    schedule.guru = guru;
+                } else {
+                    // Tambah
+                    const newSchedule = {
+                        id: `schedule-${Date.now()}`,
+                        kelas: kelas,
+                        hari: hari,
+                        jam: jam,
+                        mapel: mapel,
+                        guru: guru
+                    };
+                    db.schedule.push(newSchedule);
+                }
+
+                saveDatabase();
+                closeModal();
+                renderManageSchedule(dashboardContentArea); // [FIX] Render ke area yang benar
+                showNotification('Berhasil', 'Jadwal berhasil disimpan.', 'success');
+                
+                // Kirim notifikasi ke user di kelas tersebut
+                createNotificationForClass(
+                    kelas,
+                    'Jadwal Diperbarui',
+                    `Jadwal ${mapel} pada hari ${hari} jam ${jam} telah ${scheduleId ? 'diubah' : 'ditambahkan'}.`
+                );
             }
             
-            saveDatabase();
-            
-            // Buat notifikasi untuk user di kelas tersebut
-            createNotification(message, 'user', kelas);
-            
-            hideModal();
-            renderManageTasks(kelas); // Render ulang dengan filter kelas yg baru diedit
-        }
+            // [PERBAIKAN] Mengganti confirm() dengan modal
+            function deleteSchedule(scheduleId) {
+                const schedule = db.schedule.find(s => s.id === scheduleId);
+                if (!schedule) return;
+                
+                const message = `Apakah Anda yakin ingin menghapus jadwal ${schedule.mapel} (${schedule.hari})?`;
+                const onConfirm = `executeDeleteSchedule('${scheduleId}')`;
+                showConfirmationModal('Konfirmasi Hapus', message, onConfirm);
+            }
 
-        function deleteTask(taskId) {
-            if(confirm('Anda yakin ingin menghapus tugas ini?')) {
+            function executeDeleteSchedule(scheduleId) {
+                const schedule = db.schedule.find(s => s.id === scheduleId);
+                if (schedule) {
+                    db.schedule = db.schedule.filter(s => s.id !== scheduleId);
+                    saveDatabase();
+                    renderManageSchedule(dashboardContentArea);
+                    closeModal();
+                    showNotification('Berhasil', 'Jadwal dihapus.', 'success');
+
+                    // Kirim notifikasi
+                    createNotificationForClass(
+                        schedule.kelas,
+                        'Jadwal Dihapus',
+                        `Jadwal ${schedule.mapel} pada hari ${schedule.hari} telah dihapus.`
+                    );
+                }
+            }
+
+            function saveTask() {
+                const kelas = document.getElementById('task-form-kelas').value;
+                const mapel = document.getElementById('task-form-mapel').value;
+                const deadline = document.getElementById('task-form-deadline').value;
+                const deskripsi = document.getElementById('task-form-deskripsi').value;
+                const taskId = modalContent.dataset.taskId;
+
+                if (!kelas || !mapel || !deadline || !deskripsi) {
+                    showNotification('Gagal', 'Semua field wajib diisi.', 'danger');
+                    return;
+                }
+
+                if (taskId) {
+                    // Edit
+                    const task = db.tasks.find(t => t.id === taskId);
+                    task.kelas = kelas;
+                    task.mapel = mapel;
+                    task.deadline = deadline;
+                    task.deskripsi = deskripsi;
+                } else {
+                    // Tambah
+                    const newTask = {
+                        id: `task-${Date.now()}`,
+                        kelas: kelas,
+                        mapel: mapel,
+                        deadline: deadline,
+                        deskripsi: deskripsi
+                    };
+                    db.tasks.push(newTask);
+                }
+
+                saveDatabase();
+                closeModal();
+                renderManageTasks(dashboardContentArea); // [FIX] Render ke area yang benar
+                showNotification('Berhasil', 'Tugas berhasil disimpan.', 'success');
+
+                // Kirim notifikasi
+                createNotificationForClass(
+                    kelas,
+                    'Tugas Baru/Diperbarui',
+                    `Tugas ${mapel} dengan deadline ${formatTanggal(deadline, true)} telah ${taskId ? 'diubah' : 'ditambahkan'}.`
+                );
+            }
+
+            // [PERBAIKAN] Mengganti confirm() dengan modal
+            function deleteTask(taskId) {
                 const task = db.tasks.find(t => t.id === taskId);
-                const filterKelas = task.kelas;
-                
-                db.tasks = db.tasks.filter(t => t.id !== taskId);
-                saveDatabase();
-                
-                // Buat notifikasi
-                createNotification(`Tugas ${task.mapel} (${task.deskripsi}) untuk kelas ${task.kelas} telah dihapus.`, 'user', task.kelas);
-                
-                renderManageTasks(filterKelas);
+                if (!task) return;
+
+                const message = `Apakah Anda yakin ingin menghapus tugas ${task.mapel}?`;
+                const onConfirm = `executeDeleteTask('${taskId}')`;
+                showConfirmationModal('Konfirmasi Hapus', message, onConfirm);
             }
-        }
-        
-        // --- Sistem Notifikasi ---
-        
-        /**
-         * Membuat notifikasi baru
-         * @param {string} message - Isi pesan
-         * @param {string} targetRole - 'user', 'admin', 'superadmin'
-         * @param {string} [targetKelas=null] - Kelas spesifik (jika role='user')
-         * @param {string} [targetUserId=null] - User ID spesifik
-         */
-        function createNotification(message, targetRole, targetKelas = null, targetUserId = null) {
-            const newNotif = {
-                id: 'notif-' + Date.now(),
-                message: message,
-                timestamp: Date.now(),
-                targetRole: targetRole,
-                targetKelas: targetKelas,
-                targetUserId: targetUserId,
-                readBy: [] // List user ID yang sudah membaca
-            };
-            db.notifications.push(newNotif);
-            saveDatabase();
-            
-            // Tampilkan popup jika notifikasi ini untuk user yang sedang login
-            if (
-                (targetRole === currentUser.role || targetUserId === currentUser.id) &&
-                (!targetKelas || targetKelas === currentUser.kelas)
-            ) {
-                showNotificationPopup(message);
+
+            function executeDeleteTask(taskId) {
+                const task = db.tasks.find(t => t.id === taskId);
+                if(task) {
+                    db.tasks = db.tasks.filter(t => t.id !== taskId);
+                    saveDatabase();
+                    renderManageTasks(dashboardContentArea);
+                    closeModal();
+                    showNotification('Berhasil', 'Tugas dihapus.', 'success');
+
+                    // Kirim notifikasi
+                    createNotificationForClass(
+                        task.kelas,
+                        'Tugas Dihapus',
+                        `Tugas ${task.mapel} telah dihapus.`
+                    );
+                }
             }
-        }
-        
-        /**
-         * Menampilkan popup notifikasi ala Solo Leveling
-         */
-        function showNotificationPopup(message) {
-            const popup = document.getElementById('notification-popup');
-            document.getElementById('notification-popup-message').textContent = message;
-            popup.classList.add('show');
-            
-            // Sembunyikan setelah 5 detik
-            setTimeout(() => {
-                popup.classList.remove('show');
-            }, 5000);
-        }
 
-        function deleteNotification(notifId) {
-            // Ini hanya menghapus dari database, tapi user lain masih bisa lihat
-            // Seharusnya, ini hanya menghapus untuk user ini saja, tapi untuk demo, kita hapus global
-            db.notifications = db.notifications.filter(n => n.id !== notifId);
-            saveDatabase();
-            renderNotifications();
-        }
+            function saveUser() {
+                const name = document.getElementById('user-form-name').value;
+                const kelas = document.getElementById('user-form-kelas').value;
+                const pass = document.getElementById('user-form-password').value;
+                const userId = modalContent.dataset.userId;
 
-        function clearAllNotifications() {
-            if(confirm('Anda yakin ingin menghapus semua riwayat notifikasi?')) {
-                // Hapus semua notifikasi yang DITUJUKAN untuk user ini
-                const userNotifIds = db.notifications
-                    .filter(n => (n.targetRole === currentUser.role || n.targetUserId === currentUser.id) && (n.targetKelas === currentUser.kelas || !n.targetKelas))
-                    .map(n => n.id);
-                
-                db.notifications = db.notifications.filter(n => !userNotifIds.includes(n.id));
-                saveDatabase();
-                renderNotifications();
-            }
-        }
-        
-        // --- Modal ---
-        function showModal() {
-            document.getElementById('modal-container').classList.add('show');
-        }
+                if (!name || !kelas || !pass) {
+                    showNotification('Gagal', 'Nama, Kelas, dan Password wajib diisi.', 'danger');
+                    return;
+                }
 
-        function hideModal() {
-            document.getElementById('modal-container').classList.remove('show');
-            document.getElementById('modal-title').textContent = '';
-            document.getElementById('modal-body').innerHTML = '';
-        }
-
-        // --- Import Excel ---
-        
-        function openImportModal(type) {
-            // type = 'user' atau 'admin'
-            const modalTitle = document.getElementById('modal-title');
-            const modalBody = document.getElementById('modal-body');
-            
-            modalTitle.textContent = `Import ${type === 'user' ? 'User' : 'Admin'} dari Excel`;
-            modalBody.innerHTML = `
-                <p>Upload file (XLS, XLSX, CSV) dengan format:</p>
-                <ul>
-                    <li>Kolom A: <strong>Nama</strong></li>
-                    ${type === 'user' ? '<li>Kolom B: <strong>Kelas</strong> (cth: X-A)</li>' : ''}
-                    <li>Kolom ${type === 'user' ? 'C' : 'B'}: <strong>Password</strong></li>
-                </ul>
-                <p>Akun yang diimpor tetap memerlukan persetujuan manual setelah diupload.</p>
-                <div class="form-group" style="margin-top: 1rem;">
-                    <label for="excel-file-input">Pilih File</label>
-                    <input type="file" id="excel-file-input" class="form-control" accept=".xlsx, .xls, .csv">
-                </div>
-                <button class="btn btn-full" onclick="handleExcelImport('${type}')">Proses Import</button>
-            `;
-            showModal();
-        }
-
-        function handleExcelImport(type) {
-            const input = document.getElementById('excel-file-input');
-            if (!input.files || input.files.length === 0) {
-                alert('Silakan pilih file terlebih dahulu.');
-                return;
-            }
-            
-            const file = input.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                showLoading(true);
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[sheetName];
-                
-                // Konversi ke JSON, header: 1 berarti baris pertama adalah header
-                // raw: false berarti mengambil nilai yang diformat
-                const json = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
-                
-                // Hapus header
-                json.shift(); 
-                
-                let importedCount = 0;
-                let failedCount = 0;
-                
-                json.forEach(row => {
-                    const name = row[0];
-                    let kelas, password;
-                    
-                    if (type === 'user') {
-                        kelas = row[1];
-                        password = row[2];
-                    } else { // admin
-                        kelas = null;
-                        password = row[1];
+                if (userId) {
+                    // Edit
+                    const user = db.users.find(u => u.id === userId);
+                    user.name = name;
+                    user.kelas = kelas;
+                    user.password = pass; // Admin bisa reset password
+                } else {
+                    // Tambah
+                     if (db.users.find(u => u.name === name)) {
+                        showNotification('Registrasi Gagal', 'Nama sudah digunakan.', 'danger');
+                        return;
                     }
+                    const newUser = {
+                        id: `user-${Date.now()}`,
+                        name: name,
+                        password: pass,
+                        role: 'user',
+                        status: 'approved', // Ditambahkan admin = langsung approve
+                        kelas: kelas
+                    };
+                    db.users.push(newUser);
+                }
+                saveDatabase();
+                closeModal();
+                renderManageUsers(dashboardContentArea); // [FIX] Render ke area yang benar
+                showNotification('Berhasil', 'Data user berhasil disimpan.', 'success');
+            }
 
-                    // Validasi sederhana
-                    if (name && password && (type === 'admin' || (type === 'user' && kelas))) {
-                        if (!db.users.find(u => u.name === name)) {
-                            db.users.push({
-                                id: 'u-' + Date.now() + '-' + importedCount,
-                                name: name,
-                                password: password,
-                                role: type,
-                                kelas: kelas,
-                                approved: false
-                            });
-                            importedCount++;
-                        } else {
-                            failedCount++; // Nama sudah ada
-                        }
-                    } else {
-                        failedCount++; // Data tidak lengkap
-                    }
-                });
+            function approveUser(userId) {
+                const user = db.users.find(u => u.id === userId);
+                if (user) {
+                    user.status = 'approved';
+                    saveDatabase();
+                    if (user.role === 'user') renderManageUsers(dashboardContentArea);
+                    if (user.role === 'admin') renderManageAdmins(dashboardContentArea);
+                }
+            }
+
+            function rejectUser(userId) {
+                const user = db.users.find(u => u.id === userId);
+                if (user) {
+                    user.status = 'rejected';
+                    saveDatabase();
+                    if (user.role === 'user') renderManageUsers(dashboardContentArea);
+                    if (user.role === 'admin') renderManageAdmins(dashboardContentArea);
+                }
+            }
+
+            // [PERBAIKAN] Mengganti confirm() dengan modal
+            function deleteUser(userId) {
+                const user = db.users.find(u => u.id === userId);
+                if (!user) return;
+                
+                if(user.role === 'superadmin') {
+                    showNotification('Gagal', 'Tidak bisa menghapus Super Admin.', 'danger');
+                    return;
+                }
+
+                const message = `Apakah Anda yakin ingin menghapus user ${user.name}? Ini akan menghapus user dan catatan mereka.`;
+                const onConfirm = `executeDeleteUser('${userId}')`;
+                showConfirmationModal('Konfirmasi Hapus', message, onConfirm);
+            }
+
+            function executeDeleteUser(userId) {
+                const user = db.users.find(u => u.id === userId);
+                if (!user) return; // Cek lagi untuk keamanan
+
+                const role = user.role;
+                
+                db.users = db.users.filter(u => u.id !== userId);
+                // Hapus juga catatan milik user
+                db.notes = db.notes.filter(n => n.userId !== userId);
                 
                 saveDatabase();
-                showLoading(false);
-                hideModal();
-                alert(`Import Selesai.\nBerhasil: ${importedCount}\nGagal (data tidak lengkap/nama duplikat): ${failedCount}`);
+                closeModal();
                 
-                // Render ulang halaman manajemen
-                if(type === 'user') renderManageUsers();
-                if(type === 'admin') renderManageAdmins();
-            };
-            
-            reader.onerror = function() {
-                showLoading(false);
-                alert('Gagal membaca file.');
-            };
-
-            reader.readAsArrayBuffer(file);
-        }
-        
-        // --- Danger Zone (Super Admin) ---
-        
-        function deleteDataByClass() {
-            const kelas = document.getElementById('delete-data-class').value;
-            if (!kelas) {
-                alert('Silakan pilih kelas terlebih dahulu.');
-                return;
+                if (role === 'user') renderManageUsers(dashboardContentArea);
+                if (role === 'admin') renderManageAdmins(dashboardContentArea);
+                
+                showNotification('Berhasil', `User ${user.name} dihapus.`, 'success');
             }
-            
-            if(confirm(`ANDA YAKIN ingin menghapus SEMUA jadwal, tugas, dan user (siswa) dari kelas ${kelas}? Tindakan ini tidak dapat diurungkan.`)) {
+
+            // [PERBAIKAN] Mengganti confirm() dengan modal
+            function deleteDataByClass() {
+                const kelas = document.getElementById('delete-by-class-select').value;
+                if (!kelas) {
+                    showNotification('Gagal', 'Pilih kelas terlebih dahulu.', 'danger');
+                    return;
+                }
+                
+                const message = `ANDA YAKIN? Ini akan menghapus SEMUA user, jadwal, dan tugas untuk kelas ${kelas}.`;
+                const onConfirm = `executeDeleteDataByClass('${kelas}')`;
+                showConfirmationModal('Konfirmasi Hapus Data Kelas', message, onConfirm);
+            }
+
+            function executeDeleteDataByClass(kelas) {
                 // Hapus user
-                db.users = db.users.filter(u => !(u.role === 'user' && u.kelas === kelas));
+                db.users = db.users.filter(u => u.kelas !== kelas);
                 // Hapus jadwal
-                db.schedules = db.schedules.filter(s => s.kelas !== kelas);
+                db.schedule = db.schedule.filter(s => s.kelas !== kelas);
                 // Hapus tugas
                 db.tasks = db.tasks.filter(t => t.kelas !== kelas);
-                
-                saveDatabase();
-                alert(`Semua data untuk kelas ${kelas} telah dihapus.`);
-                document.getElementById('delete-data-class').value = '';
-            }
-        }
-        
-        function deleteAllData() {
-             if(confirm(`ANDA YAKIN ingin menghapus SEMUA jadwal dan tugas dari SEMUA KELAS? Tindakan ini tidak dapat diurungkan.`)) {
-                db.schedules = [];
-                db.tasks = [];
-                db.notes = []; // Catatan juga
-                
-                saveDatabase();
-                alert(`Semua jadwal, tugas, dan catatan telah dihapus.`);
-            }
-        }
-        
-        function factoryReset() {
-            if(confirm(`PERINGATAN AKHIR! Ini akan menghapus SEMUA user (kecuali Super Admin), admin, jadwal, tugas, dan catatan. Sistem akan kembali ke pengaturan awal. Lanjutkan?`)) {
-                const superAdmin = db.users.find(u => u.role === 'superadmin');
-                db = {
-                    users: [superAdmin], // Hanya simpan super admin
-                    schedules: [],
-                    tasks: [],
-                    notes: [],
-                    notifications: [],
-                };
-                saveDatabase();
-                alert('Factory reset berhasil.');
-                // Paksa logout untuk memuat ulang
-                handleLogout();
-            }
-        }
+                // Catatan akan terhapus otomatis jika user dihapus (tapi kita hapus lagi untuk bersih-bersih)
+                const userIdsInClass = db.users.filter(u => u.kelas === kelas).map(u => u.id);
+                db.notes = db.notes.filter(n => !userIdsInClass.includes(n.userId));
 
+                saveDatabase();
+                closeModal();
+                showNotification('Berhasil', `Semua data untuk kelas ${kelas} telah dihapus.`, 'success');
+                // Render ulang halaman pengaturan jika diperlukan
+                renderDataSettings(dashboardContentArea);
+            }
+
+            // [PERBAIKAN] Mengganti confirm() dengan modal
+            function deleteDataByGrade() {
+                const angkatan = document.getElementById('delete-by-grade-select').value;
+                if (!angkatan) {
+                    showNotification('Gagal', 'Pilih angkatan terlebih dahulu.', 'danger');
+                    return;
+                }
+
+                const message = `ANDA YAKIN? Ini akan menghapus SEMUA user, jadwal, dan tugas untuk angkatan ${angkatan}.`;
+                const onConfirm = `executeDeleteDataByGrade('${angkatan}')`;
+                showConfirmationModal('Konfirmasi Hapus Data Angkatan', message, onConfirm);
+            }
+
+            function executeDeleteDataByGrade(angkatan) {
+                const prefix = `${angkatan}-`;
+                
+                // Hapus user
+                db.users = db.users.filter(u => !u.kelas || !u.kelas.startsWith(prefix));
+                // Hapus jadwal
+                db.schedule = db.schedule.filter(s => !s.kelas.startsWith(prefix));
+                // Hapus tugas
+                db.tasks = db.tasks.filter(t => !t.kelas.startsWith(prefix));
+                
+                // Hapus catatan (agak rumit, harus cari ID user dulu)
+                const userIdsInGrade = db.users
+                    .filter(u => u.kelas && u.kelas.startsWith(prefix))
+                    .map(u => u.id);
+                db.notes = db.notes.filter(n => !userIdsInGrade.includes(n.userId));
+
+                saveDatabase();
+                closeModal();
+                showNotification('Berhasil', `Semua data untuk angkatan ${angkatan} telah dihapus.`, 'success');
+                renderDataSettings(dashboardContentArea);
+            }
+            
+            // [PERBAIKAN] Mengganti confirm() dengan modal
+            function factoryReset() {
+                const message = 'ANDA SANGAT YAKIN? Ini akan menghapus SELURUH DATA dan mengembalikan ke akun superadmin default.';
+                const onConfirm = 'executeFactoryReset()';
+                showConfirmationModal('Konfirmasi Factory Reset', message, onConfirm);
+            }
+
+            function executeFactoryReset() {
+                localStorage.removeItem('system_db');
+                loadDatabase(); // Memuat ulang DB default
+                closeModal();
+                handleLogout(); // Logout dan kembali ke login
+            }
+
+
+            // --- FUNGSI MODAL ---
+            function openModal(title, content) {
+                modalTitle.innerHTML = title;
+                modalBody.innerHTML = content;
+                modalOverlay.classList.add('show');
+                modalContent.dataset.noteId = ''; // Reset ID
+                modalContent.dataset.scheduleId = '';
+                modalContent.dataset.taskId = '';
+                modalContent.dataset.userId = '';
+            }
+
+            function closeModal() {
+                modalOverlay.classList.remove('show');
+                // [FIX] Hapus konten modal body saat ditutup
+                modalTitle.innerHTML = '';
+                modalBody.innerHTML = '';
+            }
+            
+            // [BARU] Fungsi modal konfirmasi generik
+            function showConfirmationModal(title, message, onConfirmCallbackString) {
+                const modalHTML = `
+                    <p>${sanitize(message)}</p>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                        <button class="btn btn-danger" onclick="${onConfirmCallbackString}">Ya, Hapus</button>
+                    </div>
+                `;
+                openModal(title, modalHTML);
+            }
+
+            function showNoteForm(noteId = null) {
+                const note = noteId ? db.notes.find(n => n.id === noteId) : null;
+                const title = note ? note.title : '';
+                const content = note ? note.content : '';
+
+                const formHTML = `
+                    <form id="note-form">
+                        <div class="form-group">
+                            <label for="note-title">Judul</label>
+                            <input type="text" id="note-title" class="form-control" value="${sanitize(title)}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="note-content">Isi Catatan</label>
+                            <textarea id="note-content" class="form-control" rows="5" required>${sanitize(content)}</textarea>
+                        </div>
+                        <button type="button" class="btn" onclick="saveNote()">Simpan</button>
+                    </form>
+                `;
+                openModal(note ? 'Edit Catatan' : 'Tambah Catatan', formHTML);
+                if (noteId) modalContent.dataset.noteId = noteId;
+            }
+
+            function showScheduleForm(scheduleId = null) {
+                const schedule = scheduleId ? db.schedule.find(s => s.id === scheduleId) : null;
+                
+                const formHTML = `
+                    <form id="schedule-form">
+                        <div class="form-group">
+                            <label for="schedule-form-kelas">Kelas</label>
+                            <select id="schedule-form-kelas" class="form-control" required>
+                                ${KELAS_LIST.map(k => `<option value="${k}" ${schedule && schedule.kelas === k ? 'selected' : ''}>${k}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="schedule-form-hari">Hari</label>
+                            <select id="schedule-form-hari" class="form-control" required>
+                                ${['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'].map(h => `<option value="${h}" ${schedule && schedule.hari === h ? 'selected' : ''}>${h}</option>`).join('')}
+                            </select>
+                        </div>
+                         <div class="form-group">
+                            <label for="schedule-form-jam">Jam (cth: 07:00-08:30)</label>
+                            <input type="text" id="schedule-form-jam" class="form-control" value="${schedule ? schedule.jam : ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="schedule-form-mapel">Mata Pelajaran</label>
+                            <input type="text" id="schedule-form-mapel" class="form-control" value="${schedule ? sanitize(schedule.mapel) : ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="schedule-form-guru">Nama Guru</label>
+                            <input type="text" id="schedule-form-guru" class="form-control" value="${schedule ? sanitize(schedule.guru) : ''}">
+                        </div>
+                        <button type="button" class="btn" onclick="saveSchedule()">Simpan</button>
+                    </form>
+                `;
+                openModal(schedule ? 'Edit Jadwal' : 'Tambah Jadwal', formHTML);
+                if (scheduleId) modalContent.dataset.scheduleId = scheduleId;
+            }
+
+            function showTaskForm(taskId = null) {
+                const task = taskId ? db.tasks.find(t => t.id === taskId) : null;
+
+                const formHTML = `
+                    <form id="task-form">
+                        <div class="form-group">
+                            <label for="task-form-kelas">Kelas</label>
+                            <select id="task-form-kelas" class="form-control" required>
+                                ${KELAS_LIST.map(k => `<option value="${k}" ${task && task.kelas === k ? 'selected' : ''}>${k}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-form-mapel">Mata Pelajaran</label>
+                            <input type="text" id="task-form-mapel" class="form-control" value="${task ? sanitize(task.mapel) : ''}" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="task-form-deadline">Deadline</label>
+                            <input type="date" id="task-form-deadline" class="form-control" value="${task ? task.deadline : ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-form-deskripsi">Deskripsi Tugas</label>
+                            <textarea id="task-form-deskripsi" class="form-control" rows="5" required>${task ? sanitize(task.deskripsi) : ''}</textarea>
+                        </div>
+                        <button type="button" class="btn" onclick="saveTask()">Simpan</button>
+                    </form>
+                `;
+                openModal(task ? 'Edit Tugas' : 'Tambah Tugas', formHTML);
+                if (taskId) modalContent.dataset.taskId = taskId;
+            }
+            
+            function showUserForm(userId = null) {
+                const user = userId ? db.users.find(u => u.id === userId) : null;
+
+                const formHTML = `
+                    <form id="user-form">
+                        <div class="form-group">
+                            <label for="user-form-name">Nama</label>
+                            <input type="text" id="user-form-name" class="form-control" value="${user ? sanitize(user.name) : ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-form-kelas">Kelas</label>
+                            <select id="user-form-kelas" class="form-control" required>
+                                ${KELAS_LIST.map(k => `<option value="${k}" ${user && user.kelas === k ? 'selected' : ''}>${k}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-form-password">Password</label>
+                            <input type="text" id="user-form-password" class="form-control" value="${user ? user.password : ''}" required>
+                            <small>${user ? 'Mengisi ini akan me-reset password user.' : ''}</small>
+                        </div>
+                        <button type="button" class="btn" onclick="saveUser()">Simpan</button>
+                    </form>
+                `;
+                openModal(user ? 'Edit User' : 'Tambah User', formHTML);
+                if (userId) modalContent.dataset.userId = userId;
+            }
+
+
+            // --- FUNGSI NOTIFIKASI ---
+            function showNotification(title, message, type = 'info') {
+                const popup = document.getElementById('notification-popup');
+                const popupTitle = document.getElementById('notification-popup-title');
+                const popupMessage = document.getElementById('notification-popup-message');
+
+                popupTitle.textContent = title;
+                popupMessage.textContent = message;
+
+                // Set color based on type
+                if (type === 'danger') {
+                    popup.style.borderColor = 'var(--color-danger)';
+                    popupTitle.style.color = 'var(--color-danger)';
+                } else if (type === 'success') {
+                    popup.style.borderColor = 'var(--color-success)';
+                    popupTitle.style.color = 'var(--color-success)';
+                } else {
+                    popup.style.borderColor = 'var(--color-primary)';
+                    popupTitle.style.color = 'var(--color-primary)';
+                }
+
+                popup.classList.add('show');
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                }, 4000); // Tampil selama 4 detik
+            }
+
+            function createNotificationForClass(kelas, type, message) {
+                const usersInClass = db.users.filter(u => u.kelas === kelas && u.role === 'user');
+                
+                usersInClass.forEach(user => {
+                    if (!db.notifications[user.id]) {
+                        db.notifications[user.id] = [];
+                    }
+                    
+                    const newNotif = {
+                        id: `notif-${Date.now()}`,
+                        type: type,
+                        title: type, // Sederhana
+                        message: message,
+                        timestamp: Date.now(),
+                        read: false
+                    };
+                    db.notifications[user.id].push(newNotif);
+                });
+                
+                saveDatabase();
+                
+                // Jika admin yang membuat perubahan adalah user di kelas itu, update badge-nya
+                if (currentUser.kelas === kelas) {
+                    updateNotificationBadge();
+                }
+            }
+
+            function updateNotificationBadge() {
+                if (!db.notifications[currentUser.id]) {
+                    notifBadge.style.display = 'none';
+                    return;
+                }
+                
+                const unreadCount = db.notifications[currentUser.id].filter(n => !n.read).length;
+                
+                if (unreadCount > 0) {
+                    notifBadge.textContent = unreadCount;
+                    notifBadge.style.display = 'flex';
+                } else {
+                    notifBadge.style.display = 'none';
+                }
+            }
+            
+            // --- FUNGSI IMPORT EXCEL ---
+            function handleImportExcel(event, role) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                showLoading(true);
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[sheetName];
+                        const json = XLSX.utils.sheet_to_json(worksheet);
+
+                        processImportedData(json, role);
+                    } catch (err) {
+                        console.error(err);
+                        showNotification('Import Gagal', 'Gagal membaca file Excel. Pastikan format benar.', 'danger');
+                        showLoading(false);
+                    }
+                };
+                
+                reader.onerror = () => {
+                     showNotification('Import Gagal', 'Gagal membaca file.', 'danger');
+                     showLoading(false);
+                };
+
+                reader.readAsArrayBuffer(file);
+                
+                // Reset input file agar bisa import file yang sama lagi
+                event.target.value = null;
+            }
+
+            function processImportedData(data, role) {
+                let addedCount = 0;
+                let skippedCount = 0;
+
+                data.forEach(row => {
+                    // Coba tebak header (Nama, Kelas, Password)
+                    const name = row['Nama'] || row['nama'] || row['Name'] || row['name'];
+                    const kelas = row['Kelas'] || row['kelas'] || row['Class'] || row['class'];
+                    const password = row['Password'] || row['password'];
+
+                    if (!name || !password) {
+                        skippedCount++;
+                        return;
+                    }
+                    
+                    if (role === 'user' && !kelas) {
+                        skippedCount++;
+                        return;
+                    }
+                    
+                    // Cek jika nama sudah ada
+                    if (db.users.find(u => u.name === name)) {
+                        skippedCount++;
+                        return;
+                    }
+
+                    const newUser = {
+                        id: `user-${Date.now()}-${addedCount}`,
+                        name: String(name),
+                        password: String(password),
+                        role: role,
+                        status: 'pending', // Tetap perlu persetujuan
+                        kelas: role === 'user' ? String(kelas) : null
+                    };
+                    
+                    db.users.push(newUser);
+                    addedCount++;
+                });
+
+                saveDatabase();
+                showLoading(false);
+                showNotification('Import Selesai', `${addedCount} ${role} ditambahkan (status pending). ${skippedCount} dilewati.`, 'success');
+
+                // Render ulang halaman
+                if (role === 'user') renderManageUsers(dashboardContentArea);
+                if (role === 'admin') renderManageAdmins(dashboardContentArea);
+            }
+
+
+            // --- FUNGSI UTILITAS ---
+            function sanitize(str) {
+                if (str === null || typeof str === 'undefined') return '';
+                // Fungsi sanitasi sederhana untuk mencegah XSS dasar
+                const temp = document.createElement('div');
+                temp.textContent = str;
+                return temp.innerHTML;
+            }
+            
+            function formatTanggal(dateString, includeTime = false) {
+                try {
+                    const date = new Date(dateString);
+                    if (isNaN(date.getTime())) {
+                        // Jika input adalah timestamp (angka)
+                        const timestamp = parseInt(dateString, 10);
+                        if (!isNaN(timestamp)) {
+                            const tsDate = new Date(timestamp);
+                            return formatTanggal(tsDate, includeTime); // Rekursif
+                        }
+                        return 'Invalid Date'; // Gagal parse
+                    }
+                    
+                    const options = {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                    };
+                    if (includeTime) {
+                        options.hour = '2-digit';
+                        options.minute = '2-digit';
+                    }
+                    return date.toLocaleDateString('id-ID', options);
+                } catch (e) {
+                    console.error("Error formatting date:", dateString, e);
+                    return "Invalid Date";
+                }
+            }
+            
+            function showLoading(show) {
+                if (show) {
+                    loadingOverlay.classList.add('show');
+                } else {
+                    loadingOverlay.classList.remove('show');
+                }
+            }
+
+
+            // --- GLOBAL WINDOW FUNCTIONS ---
+            // Membuat fungsi global agar bisa dipanggil dari HTML inline
+            window.showPage = showPage;
+            window.showNoteForm = showNoteForm;
+            window.saveNote = saveNote;
+            window.deleteNote = deleteNote;
+            window.deleteNotification = deleteNotification;
+            window.deleteAllNotifications = deleteAllNotifications;
+            window.showScheduleForm = showScheduleForm;
+            window.saveSchedule = saveSchedule;
+            window.deleteSchedule = deleteSchedule;
+            window.renderManageScheduleTable = renderManageScheduleTable;
+            window.showTaskForm = showTaskForm;
+            window.saveTask = saveTask;
+            window.deleteTask = deleteTask;
+            window.showUserForm = showUserForm;
+            window.saveUser = saveUser;
+            window.approveUser = approveUser;
+            window.rejectUser = rejectUser;
+            window.deleteUser = deleteUser;
+            window.renderViewAllNotesTable = renderViewAllNotesTable;
+            window.deleteDataByClass = deleteDataByClass;
+            window.deleteDataByGrade = deleteDataByGrade;
+            window.factoryReset = factoryReset;
+            
+            // [BARU] Menambahkan fungsi execute ke global scope agar bisa dipanggil modal
+            window.executeDeleteNote = executeDeleteNote;
+            window.executeDeleteAllNotifications = executeDeleteAllNotifications;
+            window.executeDeleteSchedule = executeDeleteSchedule;
+            window.executeDeleteTask = executeDeleteTask;
+            window.executeDeleteUser = executeDeleteUser;
+            window.executeDeleteDataByClass = executeDeleteDataByClass;
+            window.executeDeleteDataByGrade = executeDeleteDataByGrade;
+            window.executeFactoryReset = executeFactoryReset;
+            window.closeModal = closeModal; // Pastikan closeModal juga global
+
+            // --- MULAI APLIKASI ---
+            initializeApp();
+        });
     </script>
+
 </body>
 </html>

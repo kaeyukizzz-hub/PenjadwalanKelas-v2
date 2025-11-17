@@ -1304,16 +1304,16 @@
                 userGroup.style.display = 'none';
                 adminGroup.style.display = 'none';
                 superAdminGroup.style.display = 'none';
-
+    
                 if (currentUser.role === 'user') {
                     userGroup.style.display = 'block';
                     updateNotificationBadge();
                 } else if (currentUser.role === 'admin') {
-                    userGroup.style.display = 'block';
+                    // userGroup.style.display = 'block'; // Dihapus/dikomentari sesuai permintaan
                     adminGroup.style.display = 'block';
                     updateNotificationBadge(); // Admin juga punya notif (sebagai user)
                 } else if (currentUser.role === 'superadmin') {
-                    userGroup.style.display = 'block';
+                    // userGroup.style.display = 'block'; // Dihapus/dikomentari sesuai permintaan
                     adminGroup.style.display = 'block';
                     superAdminGroup.style.display = 'block';
                     updateNotificationBadge(); // Superadmin juga punya notif (sebagai user)

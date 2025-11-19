@@ -40,7 +40,7 @@
         html, body { height: 100%; width: 100%; }
         body { font-family: var(--font-secondary); background-color: var(--color-bg); color: var(--color-text); overflow-x: hidden; line-height: 1.6; }
         h1, h2, h3, h4 { font-family: var(--font-primary); color: var(--color-primary); text-shadow: 0 0 10px var(--color-glow); }
-        a { color: var(--color-secondary); text-decoration: none; }
+        a { color: var(--color-secondary); text-decoration: none; cursor: pointer; }
         input, select, textarea, button { font-family: var(--font-secondary); color: var(--color-text); }
 
         /* --- Kontainer Utama --- */
@@ -49,718 +49,1120 @@
         /* --- Halaman --- */
         .page { width: 100%; height: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; }
         .page.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
-        .page.slide-out-left { transform: translateX(-100%); opacity: 0; }
-        .page.slide-in-right { transform: translateX(100%); opacity: 0; }
-        .page.slide-in-from-right { transform: translateX(100%); animation: slideInFromRight 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-        .page.slide-out-to-left { animation: slideOutToLeft 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-        @keyframes slideInFromRight { 0% { transform: translateX(100%); opacity: 0; } 100% { transform: translateX(0%); opacity: 1; } }
-        @keyframes slideOutToLeft { 0% { transform: translateX(0%); opacity: 1; } 100% { transform: translateX(-100%); opacity: 0; } }
+        
+        /* --- Animasi Halaman --- */
+        .page.slide-out-left { animation: slideOutLeft 0.5s forwards; }
+        .page.slide-in-right { animation: slideInRight 0.5s forwards; }
+        @keyframes slideOutLeft { to { transform: translateX(-100%); opacity: 0; } }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- Login --- */
-        #auth-page { justify-content: center; }
+        /* --- Login Box --- */
         .auth-box { background: rgba(10, 10, 30, 0.7); border: 1px solid var(--color-primary); border-radius: 10px; padding: 2.5rem; width: 90%; max-width: 400px; backdrop-filter: blur(5px); box-shadow: 0 0 25px var(--color-glow); text-align: center; }
         .auth-box h1 { font-size: 2rem; margin-bottom: 1.5rem; }
+        
+        /* --- Form Elements --- */
         .form-group { margin-bottom: 1.5rem; text-align: left; }
         .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--color-text-dark); }
         .form-control { width: 100%; padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--color-primary); border-radius: 5px; color: var(--color-text); font-family: var(--font-secondary); font-size: 1rem; transition: all 0.3s; }
-        select.form-control { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%2300FFFF" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.658l-4.796 5.482a1 1 0 0 1-1.506 0z"/></svg>'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; padding-right: 2.5rem; }
-        select.form-control::-ms-expand { display: none; }
         .form-control:focus { outline: none; border-color: var(--color-secondary); box-shadow: 0 0 15px var(--color-glow); }
-        .form-control option { color: #000000; background: #ffffff; }
-        textarea.form-control { resize: vertical; min-height: 100px; }
-        .auth-links { margin-top: 1.5rem; font-size: 0.9rem; }
-        .auth-links a { margin: 0 0.5rem; }
+        
+        /* Fix Select Dropdown */
+        select.form-control { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%2300FFFF" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.658l-4.796 5.482a1 1 0 0 1-1.506 0z"/></svg>'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; padding-right: 2.5rem; }
+        .form-control option { color: #000; background: #fff; }
 
-        /* --- Tombol --- */
-        .btn { display: inline-block; width: 100%; padding: 0.75rem 1.5rem; font-family: var(--font-primary); font-size: 1rem; font-weight: 700; border: 2px solid var(--color-primary); border-radius: 5px; background: transparent; color: var(--color-primary); cursor: pointer; text-align: center; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
+        /* --- Tombol (Diperbaiki) --- */
+        .btn { 
+            display: inline-block; 
+            width: 100%; /* Default full width untuk form */
+            padding: 0.75rem 1.5rem; 
+            font-family: var(--font-primary); 
+            font-size: 1rem; 
+            font-weight: 700; 
+            border: 2px solid var(--color-primary); 
+            border-radius: 5px; 
+            background: transparent; 
+            color: var(--color-primary); 
+            cursor: pointer; 
+            text-align: center; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            transition: all 0.3s; 
+            margin-bottom: 0.5rem;
+        }
         .btn:hover { background: var(--color-primary); color: var(--color-bg); box-shadow: 0 0 20px var(--color-glow); }
+        
+        /* Warna Tombol */
         .btn-secondary { border-color: var(--color-text-dark); color: var(--color-text-dark); }
         .btn-secondary:hover { background: var(--color-text-dark); color: var(--color-bg); box-shadow: none; }
+        
         .btn-danger { border-color: var(--color-danger); color: var(--color-danger); }
         .btn-danger:hover { background: var(--color-danger); color: var(--color-text); box-shadow: 0 0 20px var(--color-glow-danger); }
+        
         .btn-success { border-color: var(--color-success); color: var(--color-success); }
         .btn-success:hover { background: var(--color-success); color: var(--color-bg); box-shadow: 0 0 20px rgba(77, 255, 77, 0.5); }
-        .btn-icon { background: none; border: none; color: var(--color-primary); font-size: 1.5rem; cursor: pointer; transition: color 0.3s; }
-        .btn-icon:hover { color: var(--color-secondary); }
 
-        /* --- Dashboard --- */
-        #dashboard-page { display: flex; flex-direction: row; padding: 0; justify-content: flex-start; align-items: flex-start; }
-        #dashboard-nav { width: 250px; height: 100vh; background: var(--color-bg-darker); border-right: 2px solid var(--color-primary); display: flex; flex-direction: column; padding: 1.5rem; overflow-y: auto; flex-shrink: 0; transition: transform 0.3s ease; }
+        .btn-icon { background: none; border: none; color: var(--color-primary); font-size: 1.5rem; cursor: pointer; padding: 0.2rem; }
+        .btn-icon:hover { color: var(--color-secondary); transform: scale(1.1); }
+
+        /* --- Layout Dashboard --- */
+        #dashboard-page { display: flex; flex-direction: row; align-items: flex-start; padding: 0; }
+        
+        #dashboard-nav { 
+            width: 250px; height: 100vh; background: var(--color-bg-darker); border-right: 2px solid var(--color-primary); 
+            display: flex; flex-direction: column; padding: 1.5rem; overflow-y: auto; flex-shrink: 0; 
+            transition: transform 0.3s ease; z-index: 500;
+        }
         #dashboard-nav h2 { font-size: 1.8rem; text-align: center; margin-bottom: 2rem; }
         #dashboard-nav .nav-group { margin-bottom: 1.5rem; }
-        #dashboard-nav .nav-group h4 { font-family: var(--font-secondary); font-size: 0.9rem; font-weight: 600; color: var(--color-text-dark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--color-text-dark); }
-        #dashboard-nav .nav-item { display: block; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 5px; color: var(--color-text); font-weight: 600; cursor: pointer; transition: all 0.3s; position: relative; }
-        #dashboard-nav .nav-item:hover { background: rgba(0, 255, 255, 0.1); color: var(--color-primary); transform: translateX(5px); }
-        #dashboard-nav .nav-item.active { background: var(--color-primary); color: var(--color-bg); box-shadow: 0 0 15px var(--color-glow); }
-        #dashboard-nav .nav-item .notif-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--color-danger); color: var(--color-text); font-size: 0.75rem; font-weight: 700; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--color-glow-danger); }
-        #dashboard-nav .logout-btn-container { margin-top: auto; }
-        #dashboard-main { flex-grow: 1; height: 100vh; overflow-y: auto; padding: 2rem 2rem 4rem; }
-        #dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        #dashboard-header h1 { font-size: 2.5rem; }
-        #mobile-menu-toggle { display: none; background: none; border: none; color: var(--color-primary); font-size: 2rem; cursor: pointer; }
+        #dashboard-nav .nav-item { 
+            display: block; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 5px; 
+            color: var(--color-text); font-weight: 600; cursor: pointer; transition: all 0.3s; position: relative; 
+        }
+        #dashboard-nav .nav-item:hover, #dashboard-nav .nav-item.active { 
+            background: var(--color-primary); color: var(--color-bg); box-shadow: 0 0 15px var(--color-glow); 
+        }
+        
+        #dashboard-main { flex-grow: 1; height: 100vh; overflow-y: auto; padding: 2rem; width: 100%; }
 
-        /* --- UI Card & Table --- */
-        .card { background: rgba(10, 10, 30, 0.7); border: 1px solid var(--color-primary); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 0 15px rgba(0, 255, 255, 0.1); transition: all 0.3s; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 0 20px var(--color-glow); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--color-primary); padding-bottom: 1rem; }
-        .card-header h3 { font-size: 1.4rem; color: var(--color-secondary); }
-        .card-header small { font-size: 0.9rem; color: var(--color-text-dark); font-weight: 600; }
-        .card-actions { display: flex; gap: 0.5rem; }
-        .card-actions .btn-icon { font-size: 1.2rem; padding: 0.3rem; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-        #welcome-message { text-align: center; }
-        #welcome-message h1 { font-size: 3rem; }
-        #welcome-message p { font-size: 1.2rem; color: var(--color-text-dark); max-width: 600px; margin: 1rem auto 0; }
-        .table-container { width: 100%; overflow-x: auto; background: rgba(10, 10, 30, 0.7); border: 1px solid var(--color-primary); border-radius: 8px; box-shadow: 0 0 15px rgba(0, 255, 255, 0.1); }
-        table { width: 100%; border-collapse: collapse; }
-        table th, table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--color-primary); }
-        table th { font-family: var(--font-primary); color: var(--color-primary); font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; }
+        /* --- Header & Page Layout --- */
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .page-header h1 { font-size: 2.5rem; margin: 0; }
+        
+        /* PERBAIKAN TOMBOL DI HEADER: Agar tidak melebar aneh */
+        .page-header .btn, .header-actions .btn { width: auto; margin-bottom: 0; display: inline-block; }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+
+        /* --- Tables --- */
+        .table-container { 
+            width: 100%; overflow-x: auto; background: rgba(10, 10, 30, 0.7); 
+            border: 1px solid var(--color-primary); border-radius: 8px; box-shadow: 0 0 15px rgba(0, 255, 255, 0.1); 
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        table th, table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--color-primary); }
+        table th { color: var(--color-primary); font-family: var(--font-primary); text-transform: uppercase; letter-spacing: 1px; }
         table tr:hover { background: rgba(0, 255, 255, 0.05); }
-        table td .btn { width: auto; padding: 0.3rem 0.7rem; font-size: 0.8rem; margin-right: 0.5rem; }
-        .status-pending { color: #ffc107; font-weight: 600; }
-        .status-approved { color: var(--color-success); font-weight: 600; }
-        .status-rejected { color: var(--color-danger); font-weight: 600; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .page-header h1 { font-size: 2.5rem; }
-        .header-actions { display: flex; gap: 1rem; }
+        
+        /* PERBAIKAN TOMBOL DI TABEL */
+        table td .btn { 
+            width: auto; 
+            padding: 0.4rem 0.8rem; 
+            font-size: 0.8rem; 
+            margin-right: 0.5rem; 
+            margin-bottom: 0;
+            display: inline-block;
+        }
 
-        /* --- Notification & Modal --- */
-        #notification-popup { position: fixed; top: 2rem; right: 2rem; background: var(--color-bg); border: 1px solid var(--color-primary); border-radius: 8px; padding: 1.5rem; width: 350px; box-shadow: 0 0 25px var(--color-glow); z-index: 2000; transform: translateX(120%); opacity: 0; transition: all 0.5s; animation: glow-pulse 1.5s infinite alternate; }
-        #notification-popup.show { transform: translateX(0); opacity: 1; }
-        @keyframes glow-pulse { from { box-shadow: 0 0 25px var(--color-glow); } to { box-shadow: 0 0 40px var(--color-secondary); } }
-        #notification-popup h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
-        .notification-list { display: flex; flex-direction: column; gap: 1rem; }
-        .notification-item { background: rgba(10, 10, 30, 0.7); border: 1px solid var(--color-primary); border-radius: 8px; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
-        .notification-item:hover { box-shadow: 0 0 15px var(--color-glow); }
-        #modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 1000; display: none; opacity: 0; transition: opacity 0.3s; }
-        #modal-overlay.show { display: block; opacity: 1; }
-        .modal-content { background: var(--color-bg); border: 1px solid var(--color-primary); border-radius: 10px; padding: 2rem; width: 90%; max-width: 550px; box-shadow: 0 0 25px var(--color-glow); animation: slideIn 0.3s ease-out; max-height: 90vh; display: flex; flex-direction: column; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001; }
-        @keyframes slideIn { from { transform: translate(-50%, -60%); opacity: 0; } to { transform: translate(-50%, -50%); opacity: 1; } }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-primary); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-shrink: 0; }
-        .modal-header h2 { font-size: 1.8rem; }
-        #modal-close { font-size: 2rem; color: var(--color-primary); cursor: pointer; background: none; border: none; }
-        #modal-body { overflow-y: auto; padding-right: 0.5rem; }
+        /* --- Cards & Grid --- */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .card { 
+            background: rgba(10, 10, 30, 0.7); border: 1px solid var(--color-primary); border-radius: 8px; 
+            padding: 1.5rem; transition: all 0.3s; display: flex; flex-direction: column;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 0 20px var(--color-glow); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--color-primary); padding-bottom: 0.5rem; }
+        .card-header h3 { font-size: 1.4rem; color: var(--color-secondary); margin: 0; }
+        
+        /* --- Modal --- */
+        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        #modal-overlay.show { display: flex; }
+        .modal-content { 
+            background: var(--color-bg); border: 1px solid var(--color-primary); border-radius: 10px; 
+            padding: 2rem; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; 
+            box-shadow: 0 0 30px var(--color-glow); position: relative; 
+        }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid var(--color-primary); padding-bottom: 1rem; }
+        
+        /* PERBAIKAN TOMBOL MODAL */
         .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; }
-        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal-actions .btn { width: auto; margin-bottom: 0; }
+
+        /* --- Notifications Styling (Improved) --- */
+        .notification-list { display: flex; flex-direction: column; gap: 1rem; }
+        .notification-item { 
+            background: rgba(10, 10, 30, 0.7); border: 1px solid var(--color-primary); border-radius: 8px; 
+            padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; 
+            transition: all 0.3s; 
+        }
+        .notification-item:hover { box-shadow: 0 0 15px var(--color-glow); }
+        .notif-content small { display: block; color: var(--color-text-dark); font-size: 0.8rem; margin-top: 0.3rem; }
+
+        /* --- Mobile Responsive --- */
+        #mobile-menu-toggle { display: none; background: none; border: none; color: var(--color-primary); font-size: 2rem; cursor: pointer; }
+        
+        @media (max-width: 768px) {
+            #dashboard-nav { position: fixed; left: -260px; top: 0; height: 100%; box-shadow: 5px 0 15px #000; }
+            #dashboard-nav.show { transform: translateX(260px); }
+            #mobile-menu-toggle { display: block; margin-right: 1rem; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            /* Di mobile, tombol boleh full width agar mudah dipencet */
+            .page-header .btn, .header-actions .btn { width: 100%; } 
+            .header-actions { width: 100%; flex-direction: column; }
+        }
+
+        /* --- Utils --- */
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         #loading-overlay.show { opacity: 1; pointer-events: all; }
-        .spinner { width: 60px; height: 60px; border: 5px solid var(--color-text-dark); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top: 5px solid var(--color-primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        @media (max-width: 768px) {
-            #dashboard-nav { position: fixed; left: 0; top: 0; z-index: 500; transform: translateX(-100%); box-shadow: 10px 0 20px rgba(0, 255, 255, 0.1); }
-            #dashboard-nav.show { transform: translateX(0); }
-            #dashboard-main { padding: 1.5rem; }
-            #mobile-menu-toggle { display: block; z-index: 501; }
-            .modal-content { width: 95%; padding: 1.5rem; }
-            .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            .header-actions { width: 100%; flex-direction: column; }
-            .page-header .btn, .header-actions .btn { width: 100%; }
-        }
+        #notification-popup { position: fixed; top: 20px; right: 20px; background: var(--color-bg); border: 1px solid var(--color-primary); padding: 1.5rem; border-radius: 8px; width: 300px; z-index: 2000; transform: translateX(150%); transition: 0.3s; }
+        #notification-popup.show { transform: translateX(0); }
     </style>
 </head>
 <body>
 
-    <!-- Kontainer Aplikasi -->
     <div class="app-container">
-        <!-- Login -->
+        
+        <!-- LOGIN PAGE -->
         <div class="page" id="auth-page">
             <div class="auth-box">
                 <form id="login-form">
-                    <h1>Penjadwalan Kelas</h1>
-                    <div class="form-group"><label>Nama</label><input type="text" id="login-name" class="form-control" required></div>
-                    <div class="form-group"><label>Password</label><input type="password" id="login-password" class="form-control" required></div>
-                    <button type="submit" class="btn">Login</button>
+                    <h1>Jadwal Kelas</h1>
+                    <div class="form-group">
+                        <label>Nama User</label>
+                        <input type="text" id="login-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn">MASUK</button>
                     <div class="auth-links">
-                        <a href="#" onclick="showPage('register-user-page')">Registrasi User</a> | <a href="#" onclick="showPage('register-admin-page')">Registrasi Admin</a>
+                        <a onclick="showPage('register-user-page')">Daftar User</a> | 
+                        <a onclick="showPage('register-admin-page')">Daftar Admin</a>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Register User -->
+        <!-- REGISTER USER -->
         <div class="page hidden" id="register-user-page">
             <div class="auth-box">
                 <form id="register-user-form">
-                    <h1>Registrasi User</h1>
-                    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="register-user-name" class="form-control" required></div>
-                    <div class="form-group"><label>Kelas</label><select id="register-user-class" class="form-control" required><option value="">Pilih Kelas</option></select></div>
-                    <div class="form-group"><label>Password</label><input type="password" id="register-user-password" class="form-control" required></div>
-                    <button type="submit" class="btn">Registrasi</button>
-                    <div class="auth-links"><a href="#" onclick="showPage('auth-page')">Kembali ke Login</a></div>
+                    <h1>Daftar User</h1>
+                    <div class="form-group"><label>Nama</label><input type="text" id="reg-u-name" class="form-control" required></div>
+                    <div class="form-group"><label>Kelas</label><select id="reg-u-class" class="form-control" required></select></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="reg-u-pass" class="form-control" required></div>
+                    <button type="submit" class="btn">DAFTAR</button>
+                    <div class="auth-links"><a onclick="showPage('auth-page')">Kembali</a></div>
                 </form>
             </div>
         </div>
 
-        <!-- Register Admin -->
+        <!-- REGISTER ADMIN -->
         <div class="page hidden" id="register-admin-page">
             <div class="auth-box">
                 <form id="register-admin-form">
-                    <h1>Registrasi Admin</h1>
-                    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="register-admin-name" class="form-control" required></div>
-                    <div class="form-group"><label>Password</label><input type="password" id="register-admin-password" class="form-control" required></div>
-                    <button type="submit" class="btn">Registrasi</button>
-                    <div class="auth-links"><a href="#" onclick="showPage('auth-page')">Kembali ke Login</a></div>
+                    <h1>Daftar Admin</h1>
+                    <div class="form-group"><label>Nama</label><input type="text" id="reg-a-name" class="form-control" required></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="reg-a-pass" class="form-control" required></div>
+                    <button type="submit" class="btn">DAFTAR</button>
+                    <div class="auth-links"><a onclick="showPage('auth-page')">Kembali</a></div>
                 </form>
             </div>
         </div>
 
-        <!-- Dashboard -->
+        <!-- DASHBOARD -->
         <div class="page hidden" id="dashboard-page">
             <nav id="dashboard-nav">
-                <h2>Penjadwalan Kelas</h2>
-                <div class="nav-group" id="nav-user-group">
+                <h2>Sistem Sekolah</h2>
+                
+                <!-- Navigation Links -->
+                <div class="nav-group" id="nav-user-group" style="display:none;">
                     <h4>Menu User</h4>
-                    <a class="nav-item active" data-page="home">Beranda</a>
-                    <a class="nav-item" data-page="schedule">Jadwal Kelas</a>
-                    <a class="nav-item" data-page="tasks">Tugas</a>
-                    <a class="nav-item" data-page="notes">Catatan Pribadi</a>
-                    <a class="nav-item" data-page="notifications">Notifikasi <span class="notif-badge" id="notif-badge" style="display: none;">0</span></a>
+                    <a class="nav-item" onclick="navigateTo('home')">Beranda</a>
+                    <a class="nav-item" onclick="navigateTo('schedule')">Jadwal</a>
+                    <a class="nav-item" onclick="navigateTo('tasks')">Tugas</a>
+                    <a class="nav-item" onclick="navigateTo('notes')">Catatan</a>
+                    <a class="nav-item" onclick="navigateTo('notifs')">Notifikasi <span id="badge-notif" style="background:red; padding:2px 6px; border-radius:50%; font-size:0.7rem; display:none;">0</span></a>
                 </div>
-                <div class="nav-group" id="nav-admin-group" style="display: none;">
+
+                <div class="nav-group" id="nav-admin-group" style="display:none;">
                     <h4>Menu Admin</h4>
-                    <a class="nav-item" data-page="manage-schedule">Kelola Jadwal</a>
-                    <a class="nav-item" data-page="manage-tasks">Kelola Tugas</a>
-                    <a class="nav-item" data-page="manage-users">Kelola User</a>
+                    <a class="nav-item" onclick="navigateTo('manage-sch')">Atur Jadwal</a>
+                    <a class="nav-item" onclick="navigateTo('manage-tsk')">Atur Tugas</a>
+                    <a class="nav-item" onclick="navigateTo('manage-usr')">Atur User</a>
                 </div>
-                <div class="nav-group" id="nav-superadmin-group" style="display: none;">
+
+                <div class="nav-group" id="nav-super-group" style="display:none;">
                     <h4>Super Admin</h4>
-                    <a class="nav-item" data-page="manage-admins">Kelola Admin</a>
-                    <a class="nav-item" data-page="view-all-notes">Lihat Catatan User</a>
-                    <a class="nav-item" data-page="data-settings">Pengaturan Data</a>
+                    <a class="nav-item" onclick="navigateTo('manage-adm')">Atur Admin</a>
+                    <a class="nav-item" onclick="navigateTo('all-notes')">Lihat Catatan</a>
+                    <a class="nav-item" onclick="navigateTo('settings')">Pengaturan</a>
                 </div>
-                <div class="logout-btn-container"><button class="btn btn-danger" id="logout-btn">Logout</button></div>
+
+                <div style="margin-top:auto;">
+                    <button class="btn btn-danger" onclick="doLogout()">LOGOUT</button>
+                </div>
             </nav>
+
             <main id="dashboard-main">
-                <div id="dashboard-header">
-                    <button id="mobile-menu-toggle"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg></button>
-                    <h1 id="dashboard-title-header" style="display: none;">Beranda</h1>
+                <div id="dashboard-header" style="display:flex; align-items:center; margin-bottom:2rem;">
+                    <button id="mobile-menu-toggle" onclick="toggleNav()">☰</button>
+                    <h1 id="page-title">Beranda</h1>
                 </div>
-                <div id="dashboard-content-area"></div>
+                <div id="content-area">
+                    <!-- Content Injected Here -->
+                </div>
             </main>
+        </div>
+
+    </div>
+
+    <!-- Modals & Overlays -->
+    <div id="notification-popup">
+        <h3 id="notif-title">Info</h3>
+        <p id="notif-msg">Pesan...</p>
+    </div>
+    
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Judul</h2>
+                <button onclick="closeModal()" class="btn-icon" style="font-size:2rem;">&times;</button>
+            </div>
+            <div id="modal-body">
+                <!-- Form Injected Here -->
+            </div>
         </div>
     </div>
 
-    <!-- Components -->
-    <div id="notification-popup"><h3 id="notification-popup-title"></h3><p id="notification-popup-message"></p></div>
-    <div id="modal-overlay"><div class="modal-content" id="modal-content"><div class="modal-header"><h2 id="modal-title"></h2><button id="modal-close" class="btn-icon">&times;</button></div><div id="modal-body"></div></div></div>
-    <div id="loading-overlay"><div class="spinner"></div></div>
-
-    <!-- SCRIPT -->
     <script>
-        // ======================================================
-        // KONFIGURASI SUPABASE (ISI DENGAN DATA ANDA)
-        // ======================================================
+        // ===========================================
+        // KONFIGURASI SUPABASE
+        // ===========================================
         const SUPABASE_URL = 'https://ffxxfyjvimvmvulqkdtf.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmeHhmeWp2aW12bXZ1bHFrZHRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1MTE1NDEsImV4cCI6MjA3OTA4NzU0MX0.c6zj-cH9-zvqBHN4X1yDtTUKWIrLnqT9ko5qmQLrpWE';
-        // ======================================================
-        
+        // ===========================================
+
         let supabase;
-        try {
-             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } catch(e) {
-            console.error("Supabase init error (Check URL/Key):", e);
+        let db = { users:[], schedule:[], tasks:[], notes:[], notifications:{} };
+        let currentUser = null;
+        let KELAS_LIST = [];
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            initKelas();
+            populateSelects();
+            
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                // Cek koneksi placeholder
+                if(SUPABASE_URL.includes('ganti')) {
+                    showNotif('Peringatan', 'Konfigurasi Supabase belum diisi di kode!', 'danger');
+                    // Mode Offline Darurat agar UI bisa dilihat
+                    db.users.push({id:'sa', name:'superadmin', password:'superadmin', role:'superadmin', status:'approved'});
+                } else {
+                    await loadData();
+                }
+            } catch(e) {
+                console.error("Init Error:", e);
+            }
+
+            checkSession();
+            
+            // Setup Listeners
+            document.getElementById('login-form').onsubmit = handleLogin;
+            document.getElementById('register-user-form').onsubmit = (e) => handleRegister(e, 'user');
+            document.getElementById('register-admin-form').onsubmit = (e) => handleRegister(e, 'admin');
+        });
+
+        function initKelas() {
+            ['X','XI','XII'].forEach(t => {
+                ['A','B','C','D','E','F'].forEach(j => KELAS_LIST.push(`${t}-${j}`));
+            });
+        }
+        function populateSelects() {
+            const sel = document.getElementById('reg-u-class');
+            sel.innerHTML = '<option value="">Pilih Kelas</option>';
+            KELAS_LIST.forEach(k => sel.innerHTML += `<option>${k}</option>`);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const appContainer = document.querySelector('.app-container');
-            const loginForm = document.getElementById('login-form');
-            const registerUserForm = document.getElementById('register-user-form');
-            const registerAdminForm = document.getElementById('register-admin-form');
-            const dashboardNav = document.getElementById('dashboard-nav');
-            const dashboardContentArea = document.getElementById('dashboard-content-area'); 
-            const logoutBtn = document.getElementById('logout-btn');
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const modalOverlay = document.getElementById('modal-overlay');
-            const modalContent = document.getElementById('modal-content');
-            const modalTitle = document.getElementById('modal-title');
-            const modalBody = document.getElementById('modal-body');
-            const modalClose = document.getElementById('modal-close');
-            const loadingOverlay = document.getElementById('loading-overlay');
-            const notifBadge = document.getElementById('notif-badge');
-            
-            let db = { users: [], schedule: [], tasks: [], notes: [], notifications: {} };
-            let currentUser = null;
-            const KELAS_LIST = [];
-
-            function generateKelasList() {
-                ['X', 'XI', 'XII'].forEach(t => {
-                    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'].forEach(j => {
-                        KELAS_LIST.push(`${t}-${j}`);
-                    });
-                });
-            }
-            function populateKelasSelect() {
-                const selectEl = document.getElementById('register-user-class');
-                if (selectEl) {
-                    selectEl.innerHTML = '<option value="">Pilih Kelas</option>';
-                    KELAS_LIST.forEach(k => selectEl.appendChild(new Option(k, k)));
-                }
-            }
-
-            async function initializeApp() {
-                showLoading(true);
-                generateKelasList();
-                populateKelasSelect();
-                setupEventListeners();
-                if (SUPABASE_URL.includes('ganti')) {
-                    showNotification('Konfigurasi', 'Harap isi SUPABASE_URL & KEY di kode!', 'danger');
-                    // Load local dummy if offline/unconfigured to prevent crash
-                    db.users.push({id:'superadmin', name:'superadmin', password:'superadmin', role:'superadmin', status:'approved'});
-                } else {
-                    await loadDatabase();
-                }
-                checkSession();
-                showLoading(false);
-            }
-
-            async function loadDatabase() {
-                try {
-                    const [u, s, t, n, notif] = await Promise.all([
-                        supabase.from('users').select('*'),
-                        supabase.from('schedule').select('*'),
-                        supabase.from('tasks').select('*'),
-                        supabase.from('notes').select('*'),
-                        supabase.from('notifications').select('*')
-                    ]);
-                    db.users = u.data || [];
-                    db.schedule = s.data || [];
-                    db.tasks = t.data || [];
-                    db.notes = n.data || [];
-                    db.notifications = {};
-                    if (notif.data) {
-                        notif.data.forEach(no => {
-                            if (!db.notifications[no.userId]) db.notifications[no.userId] = [];
-                            db.notifications[no.userId].push(no);
-                        });
-                    }
-                    // Auto-create superadmin if empty
-                    if (db.users.length === 0) {
-                        const sa = {id:'user-sa', name:'superadmin', password:'superadmin', role:'superadmin', status:'approved', kelas: null};
-                        await supabase.from('users').insert(sa);
-                        db.users.push(sa);
-                    }
-                } catch(e) {
-                    console.error(e);
-                    showNotification('Error', 'Gagal memuat data. Cek koneksi/API Key.', 'danger');
-                }
-            }
-
-            function checkSession() {
-                const session = sessionStorage.getItem('system_session');
-                if (session) {
-                    const userId = JSON.parse(session).userId;
-                    const user = db.users.find(u => u.id === userId);
-                    if (user) { currentUser = user; navigateToDashboard('home'); }
-                    else sessionStorage.removeItem('system_session');
-                }
-            }
-
-            function setupEventListeners() {
-                loginForm.onsubmit = handleLogin;
-                registerUserForm.onsubmit = handleRegisterUser;
-                registerAdminForm.onsubmit = handleRegisterAdmin;
-                logoutBtn.onclick = handleLogout;
-                modalClose.onclick = closeModal;
-                modalOverlay.onclick = (e) => { if(e.target === modalOverlay) closeModal(); };
-                if(mobileMenuToggle) mobileMenuToggle.onclick = () => document.getElementById('dashboard-nav').classList.toggle('show');
-                document.getElementById('dashboard-nav').onclick = handleNavClick;
-            }
-
-            // Auth Handlers
-            function handleLogin(e) {
-                e.preventDefault();
-                const name = document.getElementById('login-name').value;
-                const pass = document.getElementById('login-password').value;
-                const user = db.users.find(u => u.name === name && u.password === pass);
-                if (!user) return showNotification('Gagal', 'Nama/Password salah', 'danger');
-                if (user.status !== 'approved') return showNotification('Gagal', 'Akun belum disetujui/ditolak', 'danger');
-                sessionStorage.setItem('system_session', JSON.stringify({userId: user.id}));
-                currentUser = user;
-                navigateToDashboard('home');
-            }
-
-            async function handleRegisterUser(e) {
-                e.preventDefault();
-                await registerCommon('user');
-            }
-            async function handleRegisterAdmin(e) {
-                e.preventDefault();
-                await registerCommon('admin');
-            }
-            async function registerCommon(role) {
-                showLoading(true);
-                const prefix = role === 'user' ? 'register-user' : 'register-admin';
-                const name = document.getElementById(`${prefix}-name`).value;
-                const pass = document.getElementById(`${prefix}-password`).value;
-                const kelas = role === 'user' ? document.getElementById(`${prefix}-class`).value : null;
+        // --- Data Loading ---
+        async function loadData() {
+            showLoading(true);
+            try {
+                const [u, s, t, n, not] = await Promise.all([
+                    supabase.from('users').select('*'),
+                    supabase.from('schedule').select('*'),
+                    supabase.from('tasks').select('*'),
+                    supabase.from('notes').select('*'),
+                    supabase.from('notifications').select('*')
+                ]);
                 
-                if (db.users.find(u => u.name === name)) {
-                    showLoading(false);
-                    return showNotification('Gagal', 'Nama sudah dipakai', 'danger');
-                }
+                db.users = u.data || [];
+                db.schedule = s.data || [];
+                db.tasks = t.data || [];
+                db.notes = n.data || [];
                 
-                const newUser = { id: `user-${Date.now()}`, name, password: pass, role, status: 'pending', kelas };
-                const { error } = await supabase.from('users').insert(newUser);
-                
-                if (!error) {
-                    db.users.push(newUser);
-                    showNotification('Sukses', 'Menunggu persetujuan admin', 'success');
-                    showPage('auth-page');
-                    document.getElementById(`${prefix}-form`).reset();
-                } else {
-                    showNotification('Error', error.message, 'danger');
-                }
-                showLoading(false);
-            }
-
-            function handleLogout() {
-                sessionStorage.removeItem('system_session');
-                currentUser = null;
-                showPage('auth-page');
-            }
-
-            // Navigation
-            function showPage(pageId) {
-                document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-                document.getElementById(pageId).classList.remove('hidden');
-            }
-            function navigateToDashboard(pageName) {
-                showPage('dashboard-page');
-                updateNavUI(pageName);
-                const area = dashboardContentArea;
-                if(pageName === 'home') renderHome(area);
-                if(pageName === 'schedule') renderSchedule(area);
-                if(pageName === 'tasks') renderTasks(area);
-                if(pageName === 'notes') renderNotes(area);
-                if(pageName === 'notifications') renderNotifications(area);
-                if(pageName === 'manage-schedule') renderManageSchedule(area);
-                if(pageName === 'manage-tasks') renderManageTasks(area);
-                if(pageName === 'manage-users') renderManageUsers(area);
-                if(pageName === 'manage-admins') renderManageAdmins(area);
-                if(pageName === 'view-all-notes') renderViewAllNotes(area);
-                if(pageName === 'data-settings') renderDataSettings(area);
-            }
-            function updateNavUI(pageName) {
-                const nav = document.getElementById('dashboard-nav');
-                nav.querySelectorAll('.nav-group').forEach(g => g.style.display = 'none');
-                if(currentUser.role === 'user') document.getElementById('nav-user-group').style.display = 'block';
-                if(currentUser.role === 'admin') document.getElementById('nav-admin-group').style.display = 'block';
-                if(currentUser.role === 'superadmin') {
-                    document.getElementById('nav-admin-group').style.display = 'block';
-                    document.getElementById('nav-superadmin-group').style.display = 'block';
-                }
-                nav.querySelectorAll('.nav-item').forEach(i => {
-                    i.classList.toggle('active', i.dataset.page === pageName);
-                });
-                updateNotifBadge();
-            }
-            function handleNavClick(e) {
-                if(e.target.classList.contains('nav-item')) {
-                    navigateToDashboard(e.target.dataset.page);
-                    if(window.innerWidth <= 768) document.getElementById('dashboard-nav').classList.remove('show');
-                }
-            }
-
-            // Render Functions
-            function renderHome(c) { c.innerHTML = `<div id="welcome-message"><h1>Selamat Datang, ${sanitize(currentUser.name)}!</h1><p>Role: ${currentUser.role}</p></div>`; }
-            
-            function renderSchedule(c) {
-                const data = db.schedule.filter(s => s.kelas === currentUser.kelas);
-                let html = `<div class="page-header"><h1>Jadwal (${currentUser.kelas})</h1></div><div class="grid-container">`;
-                if(data.length === 0) html += '<p>Kosong</p>';
-                else {
-                    const days = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-                    days.forEach(d => {
-                        const daySch = data.filter(s => s.hari === d).sort((a,b)=>a.jam.localeCompare(b.jam));
-                        if(daySch.length > 0) {
-                            html += `<div class="card"><div class="card-header"><h3>${d}</h3></div><ul>${daySch.map(s=>`<li><b>${s.jam}</b>: ${sanitize(s.mapel)} (${sanitize(s.guru)})</li>`).join('')}</ul></div>`;
+                db.notifications = {};
+                if(not.data) {
+                    not.data.forEach(x => {
+                        // FIX: Handle case sensitivity for userId
+                        const uid = x.userId || x.userid;
+                        if(uid) {
+                            if(!db.notifications[uid]) db.notifications[uid] = [];
+                            db.notifications[uid].push(x);
                         }
                     });
                 }
-                c.innerHTML = html + '</div>';
+
+                // Auto create superadmin if empty
+                if(db.users.length === 0) {
+                    const sa = {id:'sa-'+Date.now(), name:'superadmin', password:'superadmin', role:'superadmin', status:'approved', kelas:null};
+                    await supabase.from('users').insert(sa);
+                    db.users.push(sa);
+                }
+
+            } catch(e) {
+                console.log(e);
             }
+            showLoading(false);
+        }
+
+        // --- Authentication ---
+        function checkSession() {
+            const sess = sessionStorage.getItem('app_session');
+            if(sess) {
+                const uid = JSON.parse(sess).id;
+                const user = db.users.find(u => u.id === uid);
+                if(user) {
+                    currentUser = user;
+                    showDashboard('home');
+                } else {
+                    sessionStorage.removeItem('app_session');
+                    showPage('auth-page');
+                }
+            } else {
+                showPage('auth-page');
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const n = document.getElementById('login-name').value;
+            const p = document.getElementById('login-password').value;
+            const user = db.users.find(u => u.name === n && u.password === p);
+
+            if(!user) return showNotif('Gagal', 'Username/Password salah', 'danger');
+            if(user.status === 'pending') return showNotif('Info', 'Akun menunggu persetujuan', 'warning');
+            if(user.status === 'rejected') return showNotif('Gagal', 'Akun ditolak admin', 'danger');
+
+            currentUser = user;
+            sessionStorage.setItem('app_session', JSON.stringify({id: user.id}));
+            showDashboard('home');
+        }
+
+        async function handleRegister(e, role) {
+            e.preventDefault();
+            const prefix = role === 'user' ? 'reg-u' : 'reg-a';
+            const name = document.getElementById(prefix+'-name').value;
+            const pass = document.getElementById(prefix+'-pass').value;
+            const kelas = role === 'user' ? document.getElementById(prefix+'-class').value : null;
+
+            if(db.users.find(u => u.name === name)) return showNotif('Gagal', 'Nama sudah dipakai', 'danger');
+
+            showLoading(true);
+            const newUser = { id: 'u-'+Date.now(), name, password: pass, role, status: 'pending', kelas };
             
-            function renderTasks(c) {
-                const data = db.tasks.filter(t => t.kelas === currentUser.kelas);
-                let html = `<div class="page-header"><h1>Tugas</h1></div><div class="grid-container">`;
-                data.forEach(t => html += `<div class="card"><h3>${sanitize(t.mapel)}</h3><p>${sanitize(t.deskripsi)}</p><small>Deadline: ${t.deadline}</small></div>`);
-                c.innerHTML = html + '</div>';
-            }
+            // Optimistic update
+            db.users.push(newUser);
+            if(supabase) await supabase.from('users').insert(newUser);
 
-            function renderNotes(c) {
-                const data = db.notes.filter(n => n.userId === currentUser.id);
-                let html = `<div class="page-header"><h1>Catatan</h1><button class="btn" onclick="showNoteForm()">+</button></div><div class="grid-container">`;
-                data.forEach(n => html += `<div class="card"><h3>${sanitize(n.title)}</h3><p>${sanitize(n.content)}</p><div class="card-actions"><button class="btn-icon" onclick="showNoteForm('${n.id}')">✎</button><button class="btn-icon" onclick="deleteNote('${n.id}')">&times;</button></div></div>`);
-                c.innerHTML = html + '</div>';
-            }
+            showNotif('Sukses', 'Pendaftaran berhasil. Tunggu admin.', 'success');
+            document.getElementById(role === 'user' ? 'register-user-form' : 'register-admin-form').reset();
+            showPage('auth-page');
+            showLoading(false);
+        }
 
-            // Admin Renders
-            function renderManageSchedule(c) {
-                c.innerHTML = `<div class="page-header"><h1>Kelola Jadwal</h1><button class="btn" onclick="showScheduleForm()">Tambah</button></div><div class="form-group"><select id="filter-kelas" class="form-control" onchange="renderScheduleTable()"><option value="">Semua</option>${KELAS_LIST.map(k=>`<option>${k}</option>`).join('')}</select></div><div id="sch-tbl" class="table-container"></div>`;
-                renderScheduleTable();
-            }
-            // Fix: Expose this specific function to window properly
-            window.renderScheduleTable = function() {
-                const filter = document.getElementById('filter-kelas').value;
-                const data = filter ? db.schedule.filter(s => s.kelas === filter) : db.schedule;
-                document.getElementById('sch-tbl').innerHTML = `<table><thead><tr><th>Kelas</th><th>Hari</th><th>Jam</th><th>Mapel</th><th>Aksi</th></tr></thead><tbody>${data.map(s=>`<tr><td>${s.kelas}</td><td>${s.hari}</td><td>${s.jam}</td><td>${s.mapel}</td><td><button class="btn-secondary" onclick="showScheduleForm('${s.id}')">Edit</button> <button class="btn-danger" onclick="deleteSchedule('${s.id}')">Hapus</button></td></tr>`).join('')}</tbody></table>`;
-            };
+        function doLogout() {
+            sessionStorage.removeItem('app_session');
+            currentUser = null;
+            showPage('auth-page');
+        }
 
-            function renderManageTasks(c) {
-                c.innerHTML = `<div class="page-header"><h1>Kelola Tugas</h1><button class="btn" onclick="showTaskForm()">Tambah</button></div><div class="table-container"><table><thead><tr><th>Kelas</th><th>Mapel</th><th>Aksi</th></tr></thead><tbody>${db.tasks.map(t=>`<tr><td>${t.kelas}</td><td>${t.mapel}</td><td><button class="btn-secondary" onclick="showTaskForm('${t.id}')">Edit</button> <button class="btn-danger" onclick="deleteTask('${t.id}')">Hapus</button></td></tr>`).join('')}</tbody></table></div>`;
-            }
+        // --- Navigation ---
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
 
-            function renderManageUsers(c) {
-                const users = db.users.filter(u => u.role === 'user');
-                c.innerHTML = `<div class="page-header"><h1>User</h1><button class="btn" onclick="showUserForm()">Tambah</button></div><div class="table-container"><table><thead><tr><th>Nama</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${users.map(u=>`<tr><td>${u.name}</td><td>${u.status}</td><td>${u.status==='pending'?`<button class="btn-success" onclick="approveUser('${u.id}')">Approve</button>`:''} <button class="btn-danger" onclick="deleteUser('${u.id}')">Del</button></td></tr>`).join('')}</tbody></table></div>`;
-            }
+        function toggleNav() {
+            document.getElementById('dashboard-nav').classList.toggle('show');
+        }
+
+        function showDashboard(view) {
+            showPage('dashboard-page');
+            // Setup Menu Visibility
+            document.getElementById('nav-user-group').style.display = currentUser.role === 'user' ? 'block' : 'none';
+            document.getElementById('nav-admin-group').style.display = ['admin', 'superadmin'].includes(currentUser.role) ? 'block' : 'none';
+            document.getElementById('nav-super-group').style.display = currentUser.role === 'superadmin' ? 'block' : 'none';
             
-            function renderManageAdmins(c) {
-                const admins = db.users.filter(u => u.role === 'admin');
-                c.innerHTML = `<div class="page-header"><h1>Admin</h1></div><div class="table-container"><table><tbody>${admins.map(u=>`<tr><td>${u.name}</td><td>${u.status}</td><td>${u.status==='pending'?`<button class="btn-success" onclick="approveUser('${u.id}')">Approve</button>`:''} <button class="btn-danger" onclick="deleteUser('${u.id}')">Del</button></td></tr>`).join('')}</tbody></table></div>`;
-            }
+            navigateTo(view);
+        }
 
-            function renderViewAllNotes(c) {
-                c.innerHTML = `<div class="page-header"><h1>Semua Catatan</h1></div><div class="form-group"><select id="note-user-filter" class="form-control" onchange="renderAllNotesTable()"><option value="">Semua</option>${db.users.filter(u=>u.role==='user').map(u=>`<option value="${u.id}">${u.name}</option>`).join('')}</select></div><div id="all-notes-list"></div>`;
-                renderAllNotesTable();
-            }
-            // Fix: Correct mapping for note filtering
-            window.renderAllNotesTable = function() {
-                const uid = document.getElementById('note-user-filter').value;
-                const data = uid ? db.notes.filter(n => n.userId === uid) : db.notes;
-                let html = '<div class="grid-container">';
-                data.forEach(n => html += `<div class="card"><h3>${sanitize(n.title)}</h3><p>${sanitize(n.content)}</p><small>${n.userId}</small></div>`);
-                document.getElementById('all-notes-list').innerHTML = html + '</div>';
-            };
+        let currentView = 'home';
+        function navigateTo(view) {
+            currentView = view;
+            const area = document.getElementById('content-area');
+            const title = document.getElementById('page-title');
+            
+            // Close mobile nav if open
+            document.getElementById('dashboard-nav').classList.remove('show');
 
-            function renderDataSettings(c) {
-                c.innerHTML = `
-                <div class="page-header"><h1>Pengaturan</h1></div>
-                <div class="grid-container">
-                    <div class="card"><h3>Hapus Per Kelas</h3>
-                        <select id="del-class" class="form-control"><option value="">Pilih</option>${KELAS_LIST.map(k=>`<option>${k}</option>`).join('')}</select>
-                        <button class="btn btn-danger" style="margin-top:1rem" onclick="deleteDataByClass()">Hapus</button>
+            // Render logic
+            if(view === 'home') {
+                title.innerText = 'Beranda';
+                area.innerHTML = `
+                    <div class="card" style="text-align:center;">
+                        <h2>Selamat Datang, ${currentUser.name}</h2>
+                        <p>Role: <strong>${currentUser.role}</strong></p>
+                        ${currentUser.kelas ? `<p>Kelas: ${currentUser.kelas}</p>` : ''}
                     </div>
-                    <div class="card"><h3>Reset Total</h3><button class="btn btn-danger" onclick="factoryReset()">Reset Aplikasi</button></div>
-                </div>`;
+                `;
             }
+            else if(view === 'schedule') renderSchedule(area, title);
+            else if(view === 'tasks') renderTasks(area, title);
+            else if(view === 'notes') renderNotes(area, title);
+            else if(view === 'notifs') renderNotifs(area, title);
+            else if(view === 'manage-sch') renderManageSch(area, title);
+            else if(view === 'manage-tsk') renderManageTsk(area, title);
+            else if(view === 'manage-usr') renderManageUsr(area, title);
+            else if(view === 'manage-adm') renderManageAdm(area, title);
+            else if(view === 'all-notes') renderAllNotes(area, title);
+            else if(view === 'settings') renderSettings(area, title);
+            
+            updateBadge();
+        }
 
-            function renderNotifications(c) {
-                const list = db.notifications[currentUser.id] || [];
-                c.innerHTML = `<div class="page-header"><h1>Notifikasi</h1><button class="btn btn-danger" onclick="deleteAllNotif()">Clear</button></div><div class="notification-list">${list.map(n=>`<div class="notification-item" id="${n.id}"><div><b>${n.title}</b><p>${n.message}</p></div><button class="btn-icon" onclick="deleteNotif('${n.id}')">&times;</button></div>`).join('')}</div>`;
-                updateNotifBadge();
-            }
+        // --- Render Functions (User) ---
+        function renderSchedule(div, title) {
+            title.innerText = `Jadwal (${currentUser.kelas})`;
+            const data = db.schedule.filter(s => s.kelas === currentUser.kelas);
+            if(!data.length) return div.innerHTML = '<p>Belum ada jadwal.</p>';
 
-            // CRUD Actions (Supabase)
-            async function saveNote() {
-                const title = document.getElementById('note-title').value;
-                const content = document.getElementById('note-content').value;
-                const id = modalContent.dataset.id;
-                if(!title) return;
-                showLoading(true);
-                const payload = { userId: currentUser.id, title, content, timestamp: Date.now() };
-                
-                if(id) {
-                    await supabase.from('notes').update(payload).eq('id', id);
-                    Object.assign(db.notes.find(n=>n.id===id), payload);
-                } else {
-                    payload.id = `note-${Date.now()}`;
-                    await supabase.from('notes').insert(payload);
-                    db.notes.push(payload);
+            let html = '<div class="grid-container">';
+            ['Senin','Selasa','Rabu','Kamis','Jumat'].forEach(day => {
+                const ds = data.filter(s => s.hari === day).sort((a,b)=>a.jam.localeCompare(b.jam));
+                if(ds.length) {
+                    html += `
+                        <div class="card">
+                            <div class="card-header"><h3>${day}</h3></div>
+                            ${ds.map(x => `<div style="border-bottom:1px dashed #555; padding:5px 0;"><b>${x.jam}</b> ${x.mapel}<br><small>${x.guru}</small></div>`).join('')}
+                        </div>`;
                 }
-                showLoading(false); closeModal(); renderNotes(dashboardContentArea);
+            });
+            div.innerHTML = html + '</div>';
+        }
+
+        function renderTasks(div, title) {
+            title.innerText = 'Daftar Tugas';
+            const data = db.tasks.filter(t => t.kelas === currentUser.kelas);
+            if(!data.length) return div.innerHTML = '<p>Tidak ada tugas.</p>';
+            
+            div.innerHTML = `<div class="grid-container">
+                ${data.map(t => `
+                    <div class="card">
+                        <div class="card-header"><h3>${t.mapel}</h3><small>${t.deadline}</small></div>
+                        <p>${t.deskripsi}</p>
+                    </div>
+                `).join('')}
+            </div>`;
+        }
+
+        function renderNotes(div, title) {
+            title.innerText = 'Catatan Pribadi';
+            const data = db.notes.filter(n => n.userId === currentUser.id);
+            div.innerHTML = `
+                <div style="margin-bottom:1rem;"><button class="btn" onclick="modalNote()">+ Buat Catatan</button></div>
+                <div class="grid-container">
+                    ${data.map(n => `
+                        <div class="card">
+                            <div class="card-header"><h3>${n.title}</h3></div>
+                            <p>${n.content}</p>
+                            <div class="card-actions" style="margin-top:auto; padding-top:1rem;">
+                                <button class="btn-icon" onclick="modalNote('${n.id}')">✎</button>
+                                <button class="btn-icon" onclick="deleteNote('${n.id}')" style="color:var(--color-danger)">🗑</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>`;
+        }
+
+        function renderNotifs(div, title) {
+            title.innerText = 'Notifikasi';
+            div.innerHTML = ''; // Clear first
+            
+            const list = (db.notifications[currentUser.id] || []).sort((a,b) => b.timestamp - a.timestamp);
+            
+            if(list.length === 0) {
+                div.innerHTML = '<p>Tidak ada notifikasi.</p>';
+                return;
             }
-            async function executeDeleteNote(id) {
-                await supabase.from('notes').delete().eq('id', id);
-                db.notes = db.notes.filter(n => n.id !== id);
-                closeModal(); renderNotes(dashboardContentArea);
+
+            div.innerHTML = `
+                <div style="margin-bottom:1rem;">
+                    <button class="btn btn-danger" onclick="clearNotifs()">Hapus Semua</button>
+                </div>
+                <div class="notification-list">
+                    ${list.map(n => `
+                        <div class="notification-item">
+                            <div class="notif-content">
+                                <b>${n.title}</b>
+                                <p style="margin:0.2rem 0;">${n.message}</p>
+                                <small>${new Date(n.timestamp).toLocaleString()}</small>
+                            </div>
+                            <button class="btn-icon" style="color:var(--color-danger); margin-left:10px;" onclick="deleteNotif('${n.id}')">&times;</button>
+                        </div>
+                    `).join('')}
+                </div>`;
+        }
+        
+        async function deleteNotif(id) {
+            showLoading(true);
+            if(supabase) await supabase.from('notifications').delete().eq('id', id);
+            db.notifications[currentUser.id] = db.notifications[currentUser.id].filter(n => n.id !== id);
+            showLoading(false);
+            // Refresh view & badge
+            if(currentView === 'notifs') renderNotifs(document.getElementById('content-area'), document.getElementById('page-title'));
+            updateBadge();
+        }
+
+        // --- Render Functions (Admin) ---
+        function renderManageSch(div, title) {
+            title.innerText = 'Kelola Jadwal';
+            div.innerHTML = `
+                <div class="page-header">
+                    <button class="btn" onclick="modalSch()">+ Tambah Jadwal</button>
+                    <select class="form-control" style="width:auto; display:inline-block;" onchange="filterSch(this.value)">
+                        <option value="">Semua Kelas</option>
+                        ${KELAS_LIST.map(k=>`<option>${k}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="table-container" id="table-sch"></div>
+            `;
+            filterSch('');
+        }
+        window.filterSch = (cls) => {
+            const data = cls ? db.schedule.filter(s => s.kelas === cls) : db.schedule;
+            document.getElementById('table-sch').innerHTML = `
+                <table>
+                    <thead><tr><th>Kelas</th><th>Hari</th><th>Jam</th><th>Mapel</th><th>Aksi</th></tr></thead>
+                    <tbody>${data.map(s => `
+                        <tr>
+                            <td>${s.kelas}</td><td>${s.hari}</td><td>${s.jam}</td><td>${s.mapel}</td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="modalSch('${s.id}')">Edit</button>
+                                <button class="btn btn-danger" onclick="delSch('${s.id}')">Hapus</button>
+                            </td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>`;
+        }
+
+        function renderManageTsk(div, title) {
+            title.innerText = 'Kelola Tugas';
+            div.innerHTML = `
+                <div class="page-header"><button class="btn" onclick="modalTask()">+ Tambah Tugas</button></div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Kelas</th><th>Mapel</th><th>Deadline</th><th>Aksi</th></tr></thead>
+                        <tbody>${db.tasks.map(t => `
+                            <tr>
+                                <td>${t.kelas}</td><td>${t.mapel}</td><td>${t.deadline}</td>
+                                <td>
+                                    <button class="btn btn-secondary" onclick="modalTask('${t.id}')">Edit</button>
+                                    <button class="btn btn-danger" onclick="delTask('${t.id}')">Hapus</button>
+                                </td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+
+        function renderManageUsr(div, title) {
+            title.innerText = 'Kelola User';
+            const users = db.users.filter(u => u.role === 'user');
+            div.innerHTML = `
+                <div class="page-header">
+                    <button class="btn" onclick="modalUser()">+ Tambah User</button>
+                    <input type="file" id="file-imp-u" hidden onchange="importExcel(this, 'user')">
+                    <button class="btn btn-secondary" onclick="document.getElementById('file-imp-u').click()">Import Excel</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Nama</th><th>Kelas</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody>${users.map(u => `
+                            <tr>
+                                <td>${u.name}</td><td>${u.kelas}</td>
+                                <td><span class="status-${u.status}">${u.status}</span></td>
+                                <td>
+                                    ${u.status === 'pending' ? `
+                                        <button class="btn btn-success" onclick="changeStatus('${u.id}','approved')">✔</button>
+                                        <button class="btn btn-danger" onclick="changeStatus('${u.id}','rejected')">✖</button>
+                                    ` : ''}
+                                    <button class="btn btn-danger" onclick="delUser('${u.id}')">Hapus</button>
+                                </td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+
+        function renderManageAdm(div, title) {
+            title.innerText = 'Kelola Admin';
+            const admins = db.users.filter(u => u.role === 'admin');
+            div.innerHTML = `
+                <div class="page-header">
+                    <input type="file" id="file-imp-a" hidden onchange="importExcel(this, 'admin')">
+                    <button class="btn btn-secondary" onclick="document.getElementById('file-imp-a').click()">Import Excel</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Nama</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody>${admins.map(u => `
+                            <tr>
+                                <td>${u.name}</td>
+                                <td><span class="status-${u.status}">${u.status}</span></td>
+                                <td>
+                                    ${u.status === 'pending' ? `
+                                        <button class="btn btn-success" onclick="changeStatus('${u.id}','approved')">✔</button>
+                                        <button class="btn btn-danger" onclick="changeStatus('${u.id}','rejected')">✖</button>
+                                    ` : ''}
+                                    <button class="btn btn-danger" onclick="delUser('${u.id}')">Hapus</button>
+                                </td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+
+        function renderAllNotes(div, title) {
+            title.innerText = 'Semua Catatan User';
+            div.innerHTML = `
+                <div class="form-group">
+                    <label>Filter User:</label>
+                    <select id="filter-notes-user" class="form-control" onchange="applyNoteFilter()">
+                        <option value="">Semua User</option>
+                        ${db.users.filter(u => u.role === 'user').map(u => `<option value="${u.id}">${u.name} (${u.kelas})</option>`).join('')}
+                    </select>
+                </div>
+                <div id="notes-grid" class="grid-container"></div>
+            `;
+            applyNoteFilter(); // Initial render
+        }
+
+        window.applyNoteFilter = () => {
+            const uid = document.getElementById('filter-notes-user').value;
+            const filtered = uid ? db.notes.filter(n => n.userId === uid) : db.notes;
+            const grid = document.getElementById('notes-grid');
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p>Tidak ada catatan.</p>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(n => {
+                const u = db.users.find(x => x.id === n.userId);
+                const authorName = u ? `${u.name} (${u.kelas})` : 'Unknown User';
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>${n.title}</h3>
+                            <small>${new Date(n.timestamp).toLocaleDateString()}</small>
+                        </div>
+                        <p>${n.content}</p>
+                        <div style="margin-top:1rem; padding-top:0.5rem; border-top:1px dashed #555; font-size:0.85rem; color:#aaa;">
+                            Oleh: <strong>${authorName}</strong>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderSettings(div, title) {
+            title.innerText = 'Pengaturan';
+            div.innerHTML = `
+                <div class="grid-container">
+                    <div class="card">
+                        <h3>Hapus Data Individual</h3>
+                        <p>Silakan hapus melalui halaman kelola (jadwal, tugas, atau user) masing-masing.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Hapus Data Kelas</h3>
+                        <div class="form-group">
+                            <select id="del-cls-sel" class="form-control">
+                                <option value="">Pilih Kelas</option>
+                                ${KELAS_LIST.map(k=>`<option>${k}</option>`).join('')}
+                            </select>
+                        </div>
+                        <button class="btn btn-danger" onclick="nukeClass()">Hapus Data</button>
+                    </div>
+                    <div class="card">
+                        <h3>Hapus Data per Angkatan</h3>
+                        <div class="form-group">
+                            <select id="del-grade-sel" class="form-control">
+                                <option value="">Pilih Angkatan</option>
+                                <option value="X">Kelas X</option>
+                                <option value="XI">Kelas XI</option>
+                                <option value="XII">Kelas XII</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-danger" onclick="nukeGrade()">Hapus Angkatan</button>
+                    </div>
+                    <div class="card">
+                        <h3>Reset Aplikasi</h3>
+                        <p>Hapus semua data kecuali Super Admin.</p>
+                        <button class="btn btn-danger" onclick="nukeAll()">RESET TOTAL</button>
+                    </div>
+                </div>`;
+        }
+
+        // --- LOGIC (CRUD & Actions) ---
+        
+        async function saveNoteData() {
+            const id = document.getElementById('note-id').value;
+            const title = document.getElementById('note-title').value;
+            const content = document.getElementById('note-content').value;
+            
+            showLoading(true);
+            const payload = { userId: currentUser.id, title, content, timestamp: Date.now() };
+            
+            if(id) {
+                // Update
+                if(supabase) await supabase.from('notes').update(payload).eq('id', id);
+                Object.assign(db.notes.find(n=>n.id===id), payload);
+            } else {
+                // Create
+                payload.id = 'n-'+Date.now();
+                if(supabase) await supabase.from('notes').insert(payload);
+                db.notes.push(payload);
             }
             
-            async function saveSchedule() {
-                const id = modalContent.dataset.id;
-                const payload = {
-                    kelas: document.getElementById('sch-kelas').value,
-                    hari: document.getElementById('sch-hari').value,
-                    jam: document.getElementById('sch-jam').value,
-                    mapel: document.getElementById('sch-mapel').value,
-                    guru: document.getElementById('sch-guru').value
-                };
-                showLoading(true);
-                if(id) {
-                    await supabase.from('schedule').update(payload).eq('id', id);
-                    Object.assign(db.schedule.find(s=>s.id===id), payload);
-                } else {
-                    payload.id = `sch-${Date.now()}`;
-                    await supabase.from('schedule').insert(payload);
-                    db.schedule.push(payload);
-                }
-                showLoading(false); closeModal(); renderManageSchedule(dashboardContentArea);
-            }
-            async function executeDeleteSchedule(id) {
-                await supabase.from('schedule').delete().eq('id', id);
-                db.schedule = db.schedule.filter(s=>s.id!==id);
-                closeModal(); renderManageSchedule(dashboardContentArea);
-            }
+            closeModal();
+            showLoading(false);
+            navigateTo('notes');
+        }
 
-            async function saveTask() {
-                const id = modalContent.dataset.id;
-                const payload = {
-                    kelas: document.getElementById('tsk-kelas').value,
-                    mapel: document.getElementById('tsk-mapel').value,
-                    deadline: document.getElementById('tsk-dead').value,
-                    deskripsi: document.getElementById('tsk-desc').value
-                };
-                showLoading(true);
-                if(id) {
-                    await supabase.from('tasks').update(payload).eq('id', id);
-                    Object.assign(db.tasks.find(t=>t.id===id), payload);
-                } else {
-                    payload.id = `tsk-${Date.now()}`;
-                    await supabase.from('tasks').insert(payload);
-                    db.tasks.push(payload);
-                }
-                showLoading(false); closeModal(); renderManageTasks(dashboardContentArea);
-            }
-            async function executeDeleteTask(id) {
-                await supabase.from('tasks').delete().eq('id', id);
-                db.tasks = db.tasks.filter(t=>t.id!==id);
-                closeModal(); renderManageTasks(dashboardContentArea);
-            }
+        async function deleteNote(id) {
+            if(!confirm('Yakin hapus?')) return;
+            showLoading(true);
+            if(supabase) await supabase.from('notes').delete().eq('id', id);
+            db.notes = db.notes.filter(n => n.id !== id);
+            showLoading(false);
+            navigateTo('notes');
+        }
 
-            async function saveUser() {
-                const id = modalContent.dataset.id;
-                const payload = {
-                    name: document.getElementById('usr-name').value,
-                    kelas: document.getElementById('usr-kelas').value,
-                    password: document.getElementById('usr-pass').value,
-                    role: 'user', status: 'approved'
-                };
-                showLoading(true);
-                if(id) {
-                    await supabase.from('users').update(payload).eq('id', id);
-                    Object.assign(db.users.find(u=>u.id===id), payload);
-                } else {
-                    payload.id = `usr-${Date.now()}`;
-                    await supabase.from('users').insert(payload);
-                    db.users.push(payload);
-                }
-                showLoading(false); closeModal(); renderManageUsers(dashboardContentArea);
+        // Helper to create modals dynamic
+        window.modalNote = (id) => {
+            const d = id ? db.notes.find(n=>n.id===id) : {title:'', content:''};
+            openModal(id?'Edit Catatan':'Catatan Baru', `
+                <input type="hidden" id="note-id" value="${id||''}">
+                <div class="form-group"><label>Judul</label><input id="note-title" class="form-control" value="${d.title}"></div>
+                <div class="form-group"><label>Isi</label><textarea id="note-content" class="form-control">${d.content}</textarea></div>
+                <div class="modal-actions"><button class="btn" onclick="saveNoteData()">Simpan</button></div>
+            `);
+        }
+
+        // --- Admin Actions ---
+        window.modalSch = (id) => {
+            const d = id ? db.schedule.find(s=>s.id===id) : {kelas:'', hari:'Senin', jam:'', mapel:'', guru:''};
+            openModal('Jadwal', `
+                <input type="hidden" id="sch-id" value="${id||''}">
+                <div class="form-group"><label>Kelas</label><select id="s-kls" class="form-control">${KELAS_LIST.map(k=>`<option ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</select></div>
+                <div class="form-group"><label>Hari</label><select id="s-hari" class="form-control">${['Senin','Selasa','Rabu','Kamis','Jumat'].map(h=>`<option ${d.hari===h?'selected':''}>${h}</option>`).join('')}</select></div>
+                <div class="form-group"><label>Jam</label><input id="s-jam" class="form-control" value="${d.jam}"></div>
+                <div class="form-group"><label>Mapel</label><input id="s-mapel" class="form-control" value="${d.mapel}"></div>
+                <div class="form-group"><label>Guru</label><input id="s-guru" class="form-control" value="${d.guru}"></div>
+                <div class="modal-actions"><button class="btn" onclick="saveSch()">Simpan</button></div>
+            `);
+        }
+        async function saveSch() {
+            const id = document.getElementById('sch-id').value;
+            const data = {
+                kelas: document.getElementById('s-kls').value,
+                hari: document.getElementById('s-hari').value,
+                jam: document.getElementById('s-jam').value,
+                mapel: document.getElementById('s-mapel').value,
+                guru: document.getElementById('s-guru').value
+            };
+            showLoading(true);
+            if(id) {
+                if(supabase) await supabase.from('schedule').update(data).eq('id', id);
+                Object.assign(db.schedule.find(s=>s.id===id), data);
+            } else {
+                data.id = 's-'+Date.now();
+                if(supabase) await supabase.from('schedule').insert(data);
+                db.schedule.push(data);
+                
+                // Notif to Users
+                notifyClass(data.kelas, 'Jadwal Baru', `Mapel ${data.mapel} ditambahkan.`);
             }
-            async function executeDeleteUser(id) {
+            closeModal(); showLoading(false); navigateTo('manage-sch');
+        }
+        async function delSch(id) {
+            if(!confirm('Hapus jadwal?')) return;
+            showLoading(true);
+            if(supabase) await supabase.from('schedule').delete().eq('id', id);
+            db.schedule = db.schedule.filter(s=>s.id!==id);
+            showLoading(false); navigateTo('manage-sch');
+        }
+
+        window.modalTask = (id) => {
+            const d = id ? db.tasks.find(t=>t.id===id) : {kelas:'', mapel:'', deadline:'', deskripsi:''};
+            openModal('Tugas', `
+                <input type="hidden" id="tsk-id" value="${id||''}">
+                <div class="form-group"><label>Kelas</label><select id="t-kls" class="form-control">${KELAS_LIST.map(k=>`<option ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</select></div>
+                <div class="form-group"><label>Mapel</label><input id="t-mapel" class="form-control" value="${d.mapel}"></div>
+                <div class="form-group"><label>Deadline</label><input type="date" id="t-dead" class="form-control" value="${d.deadline}"></div>
+                <div class="form-group"><label>Deskripsi</label><textarea id="t-desc" class="form-control">${d.deskripsi}</textarea></div>
+                <div class="modal-actions"><button class="btn" onclick="saveTaskData()">Simpan</button></div>
+            `);
+        }
+        async function saveTaskData() {
+            const id = document.getElementById('tsk-id').value;
+            const data = {
+                kelas: document.getElementById('t-kls').value,
+                mapel: document.getElementById('t-mapel').value,
+                deadline: document.getElementById('t-dead').value,
+                deskripsi: document.getElementById('t-desc').value
+            };
+            showLoading(true);
+            if(id) {
+                if(supabase) await supabase.from('tasks').update(data).eq('id', id);
+                Object.assign(db.tasks.find(t=>t.id===id), data);
+            } else {
+                data.id = 't-'+Date.now();
+                if(supabase) await supabase.from('tasks').insert(data);
+                db.tasks.push(data);
+                notifyClass(data.kelas, 'Tugas Baru', `${data.mapel} - ${data.deadline}`);
+            }
+            closeModal(); showLoading(false); navigateTo('manage-tsk');
+        }
+        async function delTask(id) {
+            if(!confirm('Hapus tugas?')) return;
+            showLoading(true);
+            if(supabase) await supabase.from('tasks').delete().eq('id', id);
+            db.tasks = db.tasks.filter(t=>t.id!==id);
+            showLoading(false); navigateTo('manage-tsk');
+        }
+
+        window.modalUser = () => {
+            openModal('Tambah User', `
+                <div class="form-group"><label>Nama</label><input id="new-u-name" class="form-control"></div>
+                <div class="form-group"><label>Kelas</label><select id="new-u-cls" class="form-control">${KELAS_LIST.map(k=>`<option>${k}</option>`).join('')}</select></div>
+                <div class="form-group"><label>Password</label><input id="new-u-pass" class="form-control"></div>
+                <div class="modal-actions"><button class="btn" onclick="saveUserData()">Simpan</button></div>
+            `);
+        }
+        async function saveUserData() {
+            const name = document.getElementById('new-u-name').value;
+            if(db.users.find(u=>u.name===name)) return alert('Nama ada');
+            
+            showLoading(true);
+            const u = {
+                id: 'u-'+Date.now(),
+                name: name,
+                password: document.getElementById('new-u-pass').value,
+                kelas: document.getElementById('new-u-cls').value,
+                role: 'user', status: 'approved'
+            };
+            if(supabase) await supabase.from('users').insert(u);
+            db.users.push(u);
+            closeModal(); showLoading(false); navigateTo('manage-usr');
+        }
+
+        // Change Status & Delete (Shared Logic)
+        async function changeStatus(id, status) {
+            showLoading(true);
+            if(supabase) await supabase.from('users').update({status}).eq('id', id);
+            const u = db.users.find(x => x.id === id);
+            if(u) u.status = status;
+            showLoading(false);
+            // Refresh correct view
+            if(u.role === 'user') navigateTo('manage-usr');
+            else navigateTo('manage-adm');
+        }
+
+        async function delUser(id) {
+            if(!confirm('Hapus user ini selamanya?')) return;
+            const u = db.users.find(x => x.id === id);
+            if(!u) return;
+            
+            showLoading(true);
+            // Delete related notes first to avoid orphan data
+            if(supabase) {
+                await supabase.from('notes').delete().eq('userId', id);
                 await supabase.from('users').delete().eq('id', id);
-                db.users = db.users.filter(u=>u.id!==id);
-                closeModal(); 
-                if(currentUser.role==='admin') renderManageUsers(dashboardContentArea);
-                else renderManageAdmins(dashboardContentArea);
             }
-            async function approveUser(id) {
-                await supabase.from('users').update({status:'approved'}).eq('id',id);
-                db.users.find(u=>u.id===id).status='approved';
-                renderManageUsers(dashboardContentArea);
-            }
+            // Local cleanup
+            db.users = db.users.filter(x => x.id !== id);
+            db.notes = db.notes.filter(n => n.userId !== id);
+            
+            showLoading(false);
+            if(u.role === 'user') navigateTo('manage-usr');
+            else navigateTo('manage-adm');
+        }
 
-            // Bulk Actions
-            async function executeDeleteDataByClass(cls) {
-                showLoading(true);
+        // --- Notifications ---
+        async function notifyClass(cls, title, msg) {
+            const targets = db.users.filter(u => u.kelas === cls);
+            if(!targets.length) return;
+            
+            const notifs = targets.map(u => ({
+                id: 'nt-'+Date.now()+Math.random(),
+                userId: u.id, type: 'info', title, message: msg, timestamp: Date.now(), read: false
+            }));
+            
+            if(supabase) await supabase.from('notifications').insert(notifs);
+            
+            // Update local db if self is in class and user
+            if(currentUser.role === 'user' && currentUser.kelas === cls) {
+                if(!db.notifications[currentUser.id]) db.notifications[currentUser.id] = [];
+                const myNotif = notifs.find(n => n.userId === currentUser.id);
+                if(myNotif) db.notifications[currentUser.id].push(myNotif);
+                updateBadge();
+                if(currentView === 'notifs') navigateTo('notifs');
+            }
+        }
+        function updateBadge() {
+            const c = (db.notifications[currentUser.id] || []).length;
+            const b = document.getElementById('badge-notif');
+            b.innerText = c;
+            b.style.display = c ? 'inline' : 'none';
+        }
+        async function clearNotifs() {
+            showLoading(true);
+            if(supabase) await supabase.from('notifications').delete().eq('userId', currentUser.id);
+            db.notifications[currentUser.id] = [];
+            showLoading(false);
+            navigateTo('notifs');
+        }
+
+        // --- Advanced Settings ---
+        async function nukeClass() {
+            const cls = document.getElementById('del-cls-sel').value;
+            if(!cls || !confirm('Hapus SEMUA data kelas '+cls+'?')) return;
+            
+            showLoading(true);
+            if(supabase) {
                 await supabase.from('schedule').delete().eq('kelas', cls);
                 await supabase.from('tasks').delete().eq('kelas', cls);
                 await supabase.from('users').delete().eq('kelas', cls);
-                db.schedule = db.schedule.filter(s=>s.kelas!==cls);
-                db.tasks = db.tasks.filter(t=>t.kelas!==cls);
-                db.users = db.users.filter(u=>u.kelas!==cls);
-                showLoading(false); closeModal(); showNotification('Sukses', 'Data dihapus', 'success');
             }
-            async function executeFactoryReset() {
-                showLoading(true);
-                await supabase.from('users').delete().neq('role','superadmin');
-                await supabase.from('schedule').delete().neq('id','0');
-                await supabase.from('tasks').delete().neq('id','0');
-                await supabase.from('notes').delete().neq('id','0');
-                localStorage.clear(); location.reload();
-            }
-
-            // Utils & Helpers
-            function showLoading(b) { loadingOverlay.classList.toggle('show', b); }
-            function showNotification(t, m, type) {
-                const p = document.getElementById('notification-popup');
-                document.getElementById('notification-popup-title').innerText = t;
-                document.getElementById('notification-popup-message').innerText = m;
-                p.style.borderColor = type === 'danger' ? 'red' : 'cyan';
-                p.classList.add('show'); setTimeout(()=>p.classList.remove('show'), 3000);
-            }
-            function updateNotifBadge() {
-                const c = (db.notifications[currentUser.id] || []).length;
-                notifBadge.innerText = c;
-                notifBadge.style.display = c > 0 ? 'flex' : 'none';
-            }
-            function closeModal() { modalOverlay.classList.remove('show'); }
-            function confirmModal(t, m, cb) {
-                modalTitle.innerText = t;
-                modalBody.innerHTML = `<p>${m}</p><div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Batal</button><button class="btn-danger" onclick="${cb}">Ya</button></div>`;
-                modalOverlay.classList.add('show');
-            }
-            function sanitize(s) { return s ? s.replace(/</g, "&lt;") : ""; }
-
-            // Form Modals
-            window.showNoteForm = (id) => {
-                const d = id ? db.notes.find(n=>n.id===id) : {title:'', content:''};
-                modalContent.dataset.id = id||'';
-                modalTitle.innerText = id ? 'Edit' : 'Baru';
-                modalBody.innerHTML = `<div class="form-group"><label>Judul</label><input id="note-title" class="form-control" value="${d.title}"></div><div class="form-group"><label>Isi</label><textarea id="note-content" class="form-control">${d.content}</textarea></div><button class="btn" onclick="saveNote()">Simpan</button>`;
-                modalOverlay.classList.add('show');
-            };
-            window.showScheduleForm = (id) => {
-                const d = id ? db.schedule.find(s=>s.id===id) : {kelas:'', hari:'', jam:'', mapel:'', guru:''};
-                modalContent.dataset.id = id||'';
-                modalTitle.innerText = 'Jadwal';
-                modalBody.innerHTML = `<div class="form-group"><label>Kelas</label><select id="sch-kelas" class="form-control">${KELAS_LIST.map(k=>`<option ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</select></div><div class="form-group"><label>Hari</label><select id="sch-hari" class="form-control">${['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'].map(h=>`<option ${d.hari===h?'selected':''}>${h}</option>`).join('')}</select></div><div class="form-group"><label>Jam</label><input id="sch-jam" class="form-control" value="${d.jam}"></div><div class="form-group"><label>Mapel</label><input id="sch-mapel" class="form-control" value="${d.mapel}"></div><div class="form-group"><label>Guru</label><input id="sch-guru" class="form-control" value="${d.guru}"></div><button class="btn" onclick="saveSchedule()">Simpan</button>`;
-                modalOverlay.classList.add('show');
-            };
-            window.showTaskForm = (id) => {
-                const d = id ? db.tasks.find(t=>t.id===id) : {kelas:'', mapel:'', deadline:'', deskripsi:''};
-                modalContent.dataset.id = id||'';
-                modalTitle.innerText = 'Tugas';
-                modalBody.innerHTML = `<div class="form-group"><label>Kelas</label><select id="tsk-kelas" class="form-control">${KELAS_LIST.map(k=>`<option ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</select></div><div class="form-group"><label>Mapel</label><input id="tsk-mapel" class="form-control" value="${d.mapel}"></div><div class="form-group"><label>Deadline</label><input type="date" id="tsk-dead" class="form-control" value="${d.deadline}"></div><div class="form-group"><label>Deskripsi</label><textarea id="tsk-desc" class="form-control">${d.deskripsi}</textarea></div><button class="btn" onclick="saveTask()">Simpan</button>`;
-                modalOverlay.classList.add('show');
-            };
-            window.showUserForm = (id) => {
-                const d = id ? db.users.find(u=>u.id===id) : {name:'', kelas:'', password:''};
-                modalContent.dataset.id = id||'';
-                modalTitle.innerText = 'User';
-                modalBody.innerHTML = `<div class="form-group"><label>Nama</label><input id="usr-name" class="form-control" value="${d.name}"></div><div class="form-group"><label>Kelas</label><select id="usr-kelas" class="form-control">${KELAS_LIST.map(k=>`<option ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</select></div><div class="form-group"><label>Password</label><input id="usr-pass" class="form-control" value="${d.password}"></div><button class="btn" onclick="saveUser()">Simpan</button>`;
-                modalOverlay.classList.add('show');
-            };
-
-            // Global Exposures for HTML OnClick
-            window.showPage = showPage;
-            window.saveNote = saveNote;
-            window.saveSchedule = saveSchedule;
-            window.saveTask = saveTask;
-            window.saveUser = saveUser;
-            window.deleteNote = (id) => confirmModal('Hapus', 'Yakin hapus?', `executeDeleteNote('${id}')`);
-            window.deleteSchedule = (id) => confirmModal('Hapus', 'Yakin hapus?', `executeDeleteSchedule('${id}')`);
-            window.deleteTask = (id) => confirmModal('Hapus', 'Yakin hapus?', `executeDeleteTask('${id}')`);
-            window.deleteUser = (id) => confirmModal('Hapus', 'Yakin hapus user?', `executeDeleteUser('${id}')`);
-            window.approveUser = approveUser;
-            window.deleteDataByClass = () => {
-                const c = document.getElementById('del-class').value;
-                if(c) confirmModal('Hapus', `Hapus semua data kelas ${c}?`, `executeDeleteDataByClass('${c}')`);
-                else showNotification('Gagal', 'Pilih kelas', 'danger');
-            };
-            window.factoryReset = () => confirmModal('Reset', 'Hapus SEMUA data?', `executeFactoryReset()`);
+            // Local cleanup
+            db.schedule = db.schedule.filter(s=>s.kelas!==cls);
+            db.tasks = db.tasks.filter(t=>t.kelas!==cls);
+            db.users = db.users.filter(u=>u.kelas!==cls);
             
-            // Execution bridges
-            window.executeDeleteNote = executeDeleteNote;
-            window.executeDeleteSchedule = executeDeleteSchedule;
-            window.executeDeleteTask = executeDeleteTask;
-            window.executeDeleteUser = executeDeleteUser;
-            window.executeDeleteDataByClass = executeDeleteDataByClass;
-            window.executeFactoryReset = executeFactoryReset;
-            window.closeModal = closeModal;
+            showLoading(false);
+            alert('Data kelas dihapus.');
+        }
 
-            // Start
-            initializeApp();
-        });
+        async function nukeGrade() {
+            const grade = document.getElementById('del-grade-sel').value; // e.g., "X"
+            if(!grade || !confirm('Hapus SEMUA data angkatan '+grade+'?')) return;
+
+            showLoading(true);
+            
+            // Filter IDs to delete locally to sync UI
+            // Grade matches prefix e.g. "X-", "XI-"
+            const prefix = grade + '-';
+            
+            if(supabase) {
+                await supabase.from('schedule').delete().ilike('kelas', `${grade}-%`);
+                await supabase.from('tasks').delete().ilike('kelas', `${grade}-%`);
+                await supabase.from('users').delete().ilike('kelas', `${grade}-%`);
+            }
+
+            // Local cleanup
+            db.schedule = db.schedule.filter(s => !s.kelas.startsWith(prefix));
+            db.tasks = db.tasks.filter(t => !t.kelas.startsWith(prefix));
+            db.users = db.users.filter(u => !u.kelas || !u.kelas.startsWith(prefix));
+
+            showLoading(false);
+            alert('Data angkatan dihapus.');
+        }
+
+        async function nukeAll() {
+            const pin = prompt("Ketik 'RESET' untuk konfirmasi:");
+            if(pin !== 'RESET') return;
+            
+            showLoading(true);
+            if(supabase) {
+                await supabase.from('users').delete().neq('role', 'superadmin');
+                await supabase.from('schedule').delete().neq('id', '0');
+                await supabase.from('tasks').delete().neq('id', '0');
+                await supabase.from('notes').delete().neq('id', '0');
+                await supabase.from('notifications').delete().neq('id', '0');
+            }
+            localStorage.clear();
+            location.reload();
+        }
+
+        // --- Excel Import ---
+        window.importExcel = (input, role) => {
+            const f = input.files[0];
+            if(!f) return;
+            
+            showLoading(true);
+            const r = new FileReader();
+            r.onload = async (e) => {
+                const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+                const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                
+                let count = 0;
+                for(let row of rows) {
+                    const name = row['Nama'] || row['Name'];
+                    const pass = row['Password'];
+                    const cls = row['Kelas'];
+                    
+                    // Validasi sederhana
+                    if(name && pass && !db.users.find(u=>u.name===name)) {
+                        const u = {
+                            id: 'u-'+Date.now()+count,
+                            name, password: pass,
+                            role: role,
+                            status: 'pending',
+                            kelas: role === 'user' ? cls : null
+                        };
+                        if(supabase) await supabase.from('users').insert(u);
+                        db.users.push(u);
+                        count++;
+                    }
+                }
+                showLoading(false);
+                alert(`Import selesai: ${count} data masuk.`);
+                // Refresh View
+                if(role === 'user') navigateTo('manage-usr');
+                else navigateTo('manage-adm');
+            };
+            r.readAsArrayBuffer(f);
+            input.value = ''; // reset
+        }
+
+        // --- UI Helpers ---
+        function showLoading(s) { document.getElementById('loading-overlay').classList.toggle('show', s); }
+        function showNotif(t, m, type) {
+            const p = document.getElementById('notification-popup');
+            document.getElementById('notif-title').innerText = t;
+            document.getElementById('notif-msg').innerText = m;
+            p.style.border = `1px solid var(--color-${type === 'danger'?'danger':'primary'})`;
+            p.classList.add('show');
+            setTimeout(() => p.classList.remove('show'), 3000);
+        }
+        function openModal(t, html) {
+            document.getElementById('modal-title').innerText = t;
+            document.getElementById('modal-body').innerHTML = html;
+            document.getElementById('modal-overlay').classList.add('show');
+        }
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('show');
+        }
     </script>
 </body>
 </html>
